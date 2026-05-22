@@ -97,10 +97,10 @@
       "type": "io.micrometer.context.ContextRegistry"
     },
     {
-      "type": "io.modelcontextprotocol.json.jackson.JacksonMcpJsonMapperSupplier"
+      "type": "io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapperSupplier"
     },
     {
-      "type": "io.modelcontextprotocol.json.schema.jackson.JacksonJsonSchemaValidatorSupplier"
+      "type": "io.modelcontextprotocol.json.schema.jackson2.JacksonJsonSchemaValidatorSupplier"
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$Annotated"

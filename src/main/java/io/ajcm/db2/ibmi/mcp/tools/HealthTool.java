@@ -4,6 +4,7 @@ import io.ajcm.db2.ibmi.mcp.db.DbClient;
 import io.ajcm.db2.ibmi.mcp.db.DbClientSingleton;
 import io.ajcm.db2.ibmi.mcp.util.KeySet;
 import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
@@ -34,7 +35,7 @@ public class HealthTool {
     public static SyncToolSpecification create() {
         String inputSchema = ResourceUtils.readClasspathResourceAsString("schemas/health.input.json");
         String outputSchema = ResourceUtils.readClasspathResourceAsString("schemas/health.output.json");
-        McpJsonMapper jsonMapper = McpJsonMapper.getDefault();
+        McpJsonMapper jsonMapper = McpJsonDefaults.getMapper();
         Tool tool = Tool.builder()
                 .name("health")
                 .title("Health")

@@ -8,6 +8,7 @@ import static io.ajcm.db2.ibmi.mcp.util.McpNotifier.startProgressPinger;
 import io.ajcm.db2.ibmi.mcp.db.DbClient;
 import io.ajcm.db2.ibmi.mcp.db.DbClientSingleton;
 import io.ajcm.db2.ibmi.mcp.util.KeySet;
+import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
@@ -44,7 +45,7 @@ public class ExecuteSelectTool {
     public static SyncToolSpecification create() {
         String inputSchema = ResourceUtils.readClasspathResourceAsString("schemas/execute_select.input.json");
         String outputSchema = ResourceUtils.readClasspathResourceAsString("schemas/execute_select.output.json");
-        McpJsonMapper jsonMapper = McpJsonMapper.getDefault();
+        McpJsonMapper jsonMapper = McpJsonDefaults.getMapper();
         Tool tool = Tool.builder()
                 .name("execute_select")
                 .title("Execute Select")
@@ -254,4 +255,3 @@ public class ExecuteSelectTool {
         return result;
     }
 }
-

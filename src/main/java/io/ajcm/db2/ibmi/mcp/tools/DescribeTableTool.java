@@ -9,6 +9,7 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.ajcm.db2.ibmi.mcp.db.DbClient;
 import io.ajcm.db2.ibmi.mcp.db.DbClientSingleton;
 import io.ajcm.db2.ibmi.mcp.util.KeySet;
+import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
@@ -45,7 +46,7 @@ public class DescribeTableTool {
     public static SyncToolSpecification create() {
         // Sync tool specification
         String inputSchema = ResourceUtils.readClasspathResourceAsString("schemas/describe_table.input.json");
-        McpJsonMapper jsonMapper = McpJsonMapper.getDefault();
+        McpJsonMapper jsonMapper = McpJsonDefaults.getMapper();
         String outputSchema = ResourceUtils.readClasspathResourceAsString("schemas/describe_table.output.json");
         Tool tool = Tool.builder()
                 .name("describe_table")

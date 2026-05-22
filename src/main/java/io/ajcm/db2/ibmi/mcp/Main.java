@@ -1,6 +1,7 @@
 package io.ajcm.db2.ibmi.mcp;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.server.McpServer;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.server.transport.StdioServerTransportProvider;
@@ -24,7 +25,7 @@ public class Main {
      * @param args application arguments
      */
     public static void main(String[] args) {
-        McpJsonMapper jsonMapper = McpJsonMapper.getDefault();
+        McpJsonMapper jsonMapper = McpJsonDefaults.getMapper();
         StdioServerTransportProvider transport = new StdioServerTransportProvider(jsonMapper);
 
         log.info("Starting MCP server (STDIO) ...");

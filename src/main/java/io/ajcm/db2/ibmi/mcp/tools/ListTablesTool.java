@@ -9,6 +9,7 @@ import io.ajcm.db2.ibmi.mcp.db.DbClient;
 import io.ajcm.db2.ibmi.mcp.db.DbClientSingleton;
 import io.ajcm.db2.ibmi.mcp.util.KeySet;
 import io.ajcm.db2.ibmi.mcp.util.ResourceUtils;
+import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
@@ -42,7 +43,7 @@ public class ListTablesTool {
      */
     public static SyncToolSpecification create() {
         String inputSchema = ResourceUtils.readClasspathResourceAsString("schemas/list_tables.input.json");
-        McpJsonMapper jsonMapper = McpJsonMapper.getDefault();
+        McpJsonMapper jsonMapper = McpJsonDefaults.getMapper();
         String outputSchema = ResourceUtils.readClasspathResourceAsString("schemas/list_tables.output.json");
         Tool tool = Tool.builder()
                 .name("list_tables")
