@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -234,6 +235,119 @@ public class DbClient {
     }
 
     /**
+     * Cursor state for list_tables keyset pagination.
+     *
+     * @param schema schema being browsed
+     * @param tablePattern normalized LIKE pattern being browsed
+     * @param lastTableName last table name from the previous page
+     * @param lastTableType last table type from the previous page
+     */
+    public record TablePageCursor(String schema, String tablePattern, String lastTableName, String lastTableType) {
+    }
+
+    /**
+     * Paginated list_tables result.
+     *
+     * @param tables current page items
+     * @param totalCount total matching objects across all pages
+     * @param hasMore whether more pages are available
+     * @param nextCursor cursor for the next page, null when no more results exist
+     */
+    public record TablesPage(List<Map<String, Object>> tables, long totalCount, boolean hasMore,
+            TablePageCursor nextCursor) {
+    }
+
+    /**
+     * Retrieves a paginated slice of tables and views using keyset pagination against
+     * QSYS2.SYSTABLES. The total count is only recomputed when no hint is provided.
+     *
+     * @param searchPattern optional table pattern or schema-qualified pattern
+     * @param limit page size already validated by the caller
+     * @param cursor pagination cursor from the previous page
+     * @param totalCountHint total count from a prior page, or null to compute it
+     * @return paginated tables page
+     */
+    public TablesPage getTablesPage(String searchPattern, int limit, TablePageCursor cursor, Long totalCountHint)
+            throws SQLException {
+        SearchScope scope = resolveSearchScope(searchPattern);
+        if (cursor != null) {
+            if (!scope.schema().equals(cursor.schema()) || !scope.tablePattern().equals(cursor.tablePattern())) {
+                throw new IllegalArgumentException(
+                        "Cursor does not match the current schema or searchPattern. Reuse the same filters or restart without cursor.");
+            }
+        }
+
+        int loginTimeoutSec = Env.getInt(KeySet.DB_LOGIN_TIMEOUT_SEC, 5, 1, 60);
+        int queryTimeoutSec = Env.getInt(KeySet.DB_QUERY_TIMEOUT_SEC, KeySet.SELECT_DEFAULT_TIMEOUT_SECONDS, 1, 60);
+        try (Connection conn = getConnection(loginTimeoutSec)) {
+            long totalCount = totalCountHint != null ? totalCountHint.longValue() : countTables(conn, scope, queryTimeoutSec);
+
+            StringBuilder sql = new StringBuilder();
+            sql.append("""
+                    SELECT TABLE_SCHEMA,
+                           TABLE_NAME,
+                           CASE TABLE_TYPE
+                               WHEN 'T' THEN 'TABLE'
+                               WHEN 'V' THEN 'VIEW'
+                               ELSE TABLE_TYPE
+                           END AS TABLE_KIND,
+                           TABLE_TEXT
+                      FROM QSYS2.SYSTABLES
+                     WHERE TABLE_SCHEMA = ?
+                       AND TABLE_TYPE IN ('T', 'V')
+                       AND TABLE_NAME LIKE ?
+                    """);
+            if (cursor != null) {
+                sql.append("""
+                       AND (
+                               TABLE_NAME > ?
+                            OR (TABLE_NAME = ? AND TABLE_TYPE > ?)
+                           )
+                        """);
+            }
+            sql.append(" ORDER BY TABLE_NAME, TABLE_TYPE FETCH FIRST ").append(limit + 1).append(" ROWS ONLY");
+
+            try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+                int index = 1;
+                ps.setString(index++, scope.schema());
+                ps.setString(index++, scope.tablePattern());
+                if (cursor != null) {
+                    ps.setString(index++, cursor.lastTableName());
+                    ps.setString(index++, cursor.lastTableName());
+                    ps.setString(index++, cursor.lastTableType());
+                }
+                ps.setQueryTimeout(queryTimeoutSec);
+
+                List<Map<String, Object>> tables = new ArrayList<>();
+                boolean hasMore = false;
+                TablePageCursor nextCursor = null;
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        if (tables.size() == limit) {
+                            hasMore = true;
+                            break;
+                        }
+                        Map<String, Object> table = new LinkedHashMap<>();
+                        table.put("schema", rs.getString("TABLE_SCHEMA"));
+                        table.put("name", rs.getString("TABLE_NAME"));
+                        table.put("type", rs.getString("TABLE_KIND"));
+                        table.put("remarks", rs.getString("TABLE_TEXT"));
+                        tables.add(table);
+                    }
+                }
+
+                if (hasMore && !tables.isEmpty()) {
+                    Map<String, Object> last = tables.get(tables.size() - 1);
+                    nextCursor = new TablePageCursor(scope.schema(), scope.tablePattern(),
+                            String.valueOf(last.get("name")), toCatalogTableType(String.valueOf(last.get("type"))));
+                }
+
+                return new TablesPage(tables, totalCount, hasMore, nextCursor);
+            }
+        }
+    }
+
+    /**
      * Returns primary key metadata for the given table or null if no PK exists.
      */
     /**
@@ -407,11 +521,15 @@ public class DbClient {
             throws SQLException {
         String validated = SqlGuards.validateSelectOnly(sql);
         validated = SqlGuards.ensureSchema(validated, requiredSchema);
-        int effectiveLimit = SqlGuards.extractOrDefaultLimit(validated, defaultLimit);
-        validated = SqlGuards.enforceLimit(validated, effectiveLimit);
+        Integer explicitSqlLimit = SqlGuards.extractLimit(validated);
+        boolean sqlOwnLimitRespected = explicitSqlLimit != null && explicitSqlLimit <= defaultLimit;
+        int visibleLimit = sqlOwnLimitRespected ? explicitSqlLimit : defaultLimit;
+        int executionLimit = sqlOwnLimitRespected ? visibleLimit : visibleLimit + 1;
+        validated = SqlGuards.applyLimit(validated, executionLimit);
 
         // Log the final SQL that will be executed
-        log.info("Executing SQL (limit={}): {}", effectiveLimit, validated);
+        log.info("Executing SQL (visibleLimit={}, executionLimit={}, sqlOwnLimitRespected={}): {}",
+                visibleLimit, executionLimit, sqlOwnLimitRespected, validated);
 
         long start = System.currentTimeMillis();
         int loginTimeoutSec = Env.getInt(KeySet.DB_LOGIN_TIMEOUT_SEC, 5, 1, 60);
@@ -433,22 +551,22 @@ public class DbClient {
                     col.put("nullable", md.isNullable(i) == ResultSetMetaData.columnNullable);
                     columns.add(col);
                 }
-                // Collect rows up to effectiveLimit (already enforced in SQL, but guard here
-                // too)
+                boolean hasMore = false;
                 while (rs.next()) {
+                    if (!sqlOwnLimitRespected && rows.size() == visibleLimit) {
+                        hasMore = true;
+                        break;
+                    }
                     Map<String, Object> row = new LinkedHashMap<>();
                     for (int i = 1; i <= cols; i++) {
                         row.put(md.getColumnLabel(i), rs.getObject(i));
                     }
                     rows.add(row);
                     count++;
-                    if (count >= effectiveLimit) {
-                        break;
-                    }
                 }
-            }
-            long elapsed = System.currentTimeMillis() - start;
-            return new SelectResult(columns, rows, count, elapsed);
+                long elapsed = System.currentTimeMillis() - start;
+                return new SelectResult(columns, rows, count, elapsed, visibleLimit, hasMore, hasMore);
+                }
         }
     }
 
@@ -456,6 +574,49 @@ public class DbClient {
      * Encapsulates query execution results.
      */
     public record SelectResult(List<Map<String, Object>> columns, List<Map<String, Object>> rows, int rowCount,
-            long elapsedMs) {
+            long elapsedMs, int appliedLimit, boolean hasMore, boolean truncated) {
+    }
+
+    private SearchScope resolveSearchScope(String searchPattern) {
+        String schemaUpper = this.schema.toUpperCase(Locale.ROOT);
+        String pattern = searchPattern == null || searchPattern.isBlank() ? "%"
+                : searchPattern.toUpperCase(Locale.ROOT);
+        int dot = pattern.indexOf('.');
+        if (dot > 0 && dot < pattern.length() - 1) {
+            schemaUpper = pattern.substring(0, dot);
+            pattern = pattern.substring(dot + 1);
+        }
+        return new SearchScope(schemaUpper, pattern);
+    }
+
+    private long countTables(Connection conn, SearchScope scope, int queryTimeoutSec) throws SQLException {
+        String sql = """
+                SELECT COUNT(*)
+                  FROM QSYS2.SYSTABLES
+                 WHERE TABLE_SCHEMA = ?
+                   AND TABLE_TYPE IN ('T', 'V')
+                   AND TABLE_NAME LIKE ?
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, scope.schema());
+            ps.setString(2, scope.tablePattern());
+            ps.setQueryTimeout(queryTimeoutSec);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getLong(1) : 0L;
+            }
+        }
+    }
+
+    private static String toCatalogTableType(String toolType) {
+        if ("TABLE".equals(toolType)) {
+            return "T";
+        }
+        if ("VIEW".equals(toolType)) {
+            return "V";
+        }
+        return toolType;
+    }
+
+    private record SearchScope(String schema, String tablePattern) {
     }
 }

@@ -108,6 +108,24 @@ public class SqlGuards {
     }
 
     /**
+     * Extracts an explicit limit from the SQL if present.
+     *
+     * @param sql the SQL query
+     * @return explicit limit or null when not present
+     */
+    public static Integer extractLimit(String sql) {
+        Matcher fetch = FETCH_FIRST_PATTERN.matcher(sql);
+        if (fetch.find()) {
+            return Integer.parseInt(fetch.group(1));
+        }
+        Matcher lim = LIMIT_PATTERN.matcher(sql);
+        if (lim.find()) {
+            return Integer.parseInt(lim.group(1));
+        }
+        return null;
+    }
+
+    /**
      * Enforces a maximum row limit on the query.
      * 
      * @param sql the SQL query
@@ -143,6 +161,37 @@ public class SqlGuards {
         }
 
         // No limit clause present: append FETCH FIRST
+        String trimmed = sql.trim();
+        if (!trimmed.endsWith(" ")) {
+            trimmed = trimmed + " ";
+        }
+        return trimmed + "FETCH FIRST " + limit + " ROWS ONLY";
+    }
+
+    /**
+     * Replaces an existing limit clause with the exact requested limit, or appends it
+     * when none exists.
+     *
+     * @param sql the SQL query
+     * @param limit the exact limit to apply
+     * @return SQL with the exact limit applied
+     */
+    public static String applyLimit(String sql, int limit) {
+        Matcher fetch = FETCH_FIRST_PATTERN.matcher(sql);
+        if (fetch.find()) {
+            return fetch.replaceFirst("FETCH FIRST " + limit + " ROWS ONLY");
+        }
+
+        Matcher lim = LIMIT_PATTERN.matcher(sql);
+        if (lim.find()) {
+            String withoutLimit = lim.replaceFirst("");
+            String trimmed = withoutLimit.trim().replaceAll("\\s+", " ");
+            if (!trimmed.endsWith(" ")) {
+                trimmed = trimmed + " ";
+            }
+            return trimmed + "FETCH FIRST " + limit + " ROWS ONLY";
+        }
+
         String trimmed = sql.trim();
         if (!trimmed.endsWith(" ")) {
             trimmed = trimmed + " ";

@@ -28,4 +28,7 @@ public final class KeySet {
     // Tool defaults
     public static final int SELECT_DEFAULT_TIMEOUT_SECONDS = 10;
     public static final int SELECT_DEFAULT_ROW_LIMIT = 20;
+    public static final int SELECT_MAX_ROW_LIMIT = 200;
+    public static final int LIST_TABLES_DEFAULT_LIMIT = 200;
+    public static final int LIST_TABLES_MAX_LIMIT = 500;
 }

@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'io.ajcm'
-version = '1.0.0'
+version = '1.0.1'
 
 java {
     toolchain {
@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    implementation platform('io.modelcontextprotocol.sdk:mcp-bom:1.1.2')
+    implementation platform('io.modelcontextprotocol.sdk:mcp-bom:1.1.3')
     implementation 'io.modelcontextprotocol.sdk:mcp-core'
     implementation 'io.modelcontextprotocol.sdk:mcp-json-jackson2'
     implementation 'net.sf.jt400:jt400:21.0.6'
@@ -37,4 +37,10 @@ test {
 
 application {
     mainClass = "io.ajcm.db2.ibmi.mcp.Main"
+}
+
+tasks.withType(Jar).configureEach {
+    manifest {
+        attributes('Implementation-Version': project.version)
+    }
 }

@@ -9,7 +9,7 @@ Use the Gradle wrapper from the repository root:
 - `./gradlew test` runs the JUnit suite.
 - `./gradlew clean shadowJar` builds the runnable fat JAR in `build/libs/`.
 - `./gradlew clean nativeCompile` builds the GraalVM native binary in `build/native/nativeCompile/`.
-- `java -jar build/libs/db2-ibmi-mcp-readonly-1.0.0-all.jar` runs the server in JVM mode for local validation.
+- `java -jar build/libs/db2-ibmi-mcp-readonly-*-all.jar` runs the server in JVM mode for local validation.
 
 Set DB2 connection variables before running locally; use `.env.example` as the canonical template.
 

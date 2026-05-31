@@ -18,17 +18,22 @@ import org.slf4j.LoggerFactory;
  */
 public class Main {
     private static final Logger log = LoggerFactory.getLogger(Main.class);
+    private static final String SERVER_NAME = "db2-ibmi-mcp-readonly";
 
     /**
      * Starts the MCP server and registers all tools.
      * 
      * @param args application arguments
      */
-    public static void main(String[] args) {
+     static void main(String[] args) {
+        String serverVersion = Main.class.getPackage().getImplementationVersion();
+        if (serverVersion == null || serverVersion.isBlank()) {
+            serverVersion = "unknown";
+        }
         McpJsonMapper jsonMapper = McpJsonDefaults.getMapper();
         StdioServerTransportProvider transport = new StdioServerTransportProvider(jsonMapper);
 
-        log.info("Starting MCP server (STDIO) ...");
+        log.info("Starting MCP server (STDIO) {} ...", serverVersion);
 
         ServerCapabilities capabilities = ServerCapabilities.builder()
                 .tools(true) // Enable tool support
@@ -36,7 +41,7 @@ public class Main {
                 .build();
 
         McpSyncServer syncServer = McpServer.sync(transport)
-                .serverInfo("db2-ibmi-mcp-readonly", "1.0.0")
+                .serverInfo(SERVER_NAME, serverVersion)
                 .capabilities(capabilities)
                 .build();
 
