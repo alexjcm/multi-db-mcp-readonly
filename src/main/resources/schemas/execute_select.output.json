@@ -24,6 +24,18 @@
       "description": "Result rows from the query (may be limited by the tool's default row limit)"
     },
     "rowCount": { "type": "integer" },
+    "appliedLimit": {
+      "type": "integer",
+      "description": "Effective preview limit applied to this response"
+    },
+    "hasMore": {
+      "type": "boolean",
+      "description": "True when additional rows matched but were not returned in this preview"
+    },
+    "truncated": {
+      "type": "boolean",
+      "description": "True when the response was truncated to the applied preview limit"
+    },
     "elapsedMs": { "type": "integer" },
     "connectionId": { "type": "string", "description": "Effective connection profile ID used for this query" },
     "error": {
@@ -37,6 +49,6 @@
       "additionalProperties": false
     }
   },
-  "required": ["columns", "rows", "rowCount", "elapsedMs"],
+  "required": ["columns", "rows", "rowCount", "appliedLimit", "hasMore", "truncated", "elapsedMs"],
   "additionalProperties": false
 }

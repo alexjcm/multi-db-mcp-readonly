@@ -7,6 +7,12 @@
       "minLength": 1,
       "description": "SELECT SQL query to execute (must be read-only; non-SELECT statements are rejected)"
     },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200,
+      "description": "Optional preview limit. Defaults to 20 and is capped at 200. If provided by the agent and within the allowed range, it is respected."
+    },
     "connectionId": {
       "type": "string",
       "description": "Optional connection profile ID (e.g., ECUADOR or PANAMA). Normalized to uppercase without diacritics. If omitted, the default profile is used."

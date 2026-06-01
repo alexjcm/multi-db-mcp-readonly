@@ -1,28 +1,94 @@
 {
-    "type": "object",
-    "properties": {
-        "tables": {
-            "type": "array",
-            "items": {
-                "type": "object"
-            }
-        },
-        "elapsedMs": {
-            "type": "number"
-        },
-        "connectionId": {
+  "type": "object",
+  "properties": {
+    "tables": {
+      "type": "array",
+      "description": "Current page of tables and views",
+      "items": {
+        "type": "object",
+        "properties": {
+          "schema": {
             "type": "string"
-        },
-        "error": {
-            "type": [
-                "object",
-                "null"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "TABLE",
+              "VIEW"
             ]
-        }
+          },
+          "remarks": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "schema",
+          "name",
+          "type",
+          "remarks"
+        ],
+        "additionalProperties": false
+      }
     },
-    "required": [
-        "tables",
-        "elapsedMs",
-        "connectionId"
-    ]
+    "count": {
+      "type": "integer",
+      "description": "Number of objects returned in this page"
+    },
+    "limit": {
+      "type": "integer",
+      "description": "Effective page size used for this response"
+    },
+    "totalCount": {
+      "type": "integer",
+      "description": "Total matching objects across all pages"
+    },
+    "hasMore": {
+      "type": "boolean",
+      "description": "True when additional pages are available"
+    },
+    "nextCursor": {
+      "type": "string",
+      "description": "Opaque cursor for the next page. Present only when hasMore is true."
+    },
+    "elapsedMs": {
+      "type": "number"
+    },
+    "connectionId": {
+      "type": "string",
+      "description": "Effective connection profile ID used"
+    },
+    "error": {
+      "type": "object",
+      "description": "Present only on error",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "tables",
+    "count",
+    "limit",
+    "totalCount",
+    "hasMore",
+    "elapsedMs",
+    "connectionId"
+  ],
+  "additionalProperties": false
 }

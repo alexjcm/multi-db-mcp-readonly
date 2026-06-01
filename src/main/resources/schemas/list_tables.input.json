@@ -5,6 +5,16 @@
             "type": "string",
             "description": "Optional search pattern to filter tables. Used in a SQL LIKE clause. Supports wildcards: '%' (match zero or more characters) and '_' (match single character). Examples: '%CLIENTS%' (finds tables with CLIENTS in the name). To search in a specific schema, prepend it: 'SCHEMA_NAME.%'. If omitted, returns all tables for the current connection scheme."
         },
+        "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500,
+            "description": "Optional page size. Defaults to 200 and is capped at 500."
+        },
+        "cursor": {
+            "type": "string",
+            "description": "Opaque pagination cursor returned as nextCursor by a previous call. Reuse the same connectionId and searchPattern when providing it."
+        },
         "connectionId": {
             "type": "string",
             "description": "Optional connection profile ID (e.g., ECUADOR or PANAMA). Normalized to uppercase without diacritics. If omitted, the default profile is used."
