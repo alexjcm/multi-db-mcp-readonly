@@ -17,6 +17,14 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name":"com.ibm.as400.access.AS400JDBCConnectionImpl",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.ibm.as400.access.AS400JDBCConnectionRedirect",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"com.ibm.as400.access.AS400JDBCDriver"
 },
 {
@@ -33,6 +41,10 @@
 },
 {
   "name":"com.ibm.as400.access.Properties"
+},
+{
+  "name":"com.ibm.as400.access.JDConnectionProxy",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"com.ibm.as400.access.SocketContainerInet",
@@ -281,7 +293,8 @@
   "name":"io.modelcontextprotocol.spec.McpSchema$ToolAnnotations",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String","java.lang.Boolean","java.lang.Boolean","java.lang.Boolean","java.lang.Boolean","java.lang.Boolean"] }, {"name":"destructiveHint","parameterTypes":[] }, {"name":"idempotentHint","parameterTypes":[] }, {"name":"openWorldHint","parameterTypes":[] }, {"name":"readOnlyHint","parameterTypes":[] }, {"name":"returnDirect","parameterTypes":[] }, {"name":"title","parameterTypes":[] }]
 },
 {
   "name":"java.io.Serializable",

@@ -25,7 +25,7 @@ public class Main {
      * 
      * @param args application arguments
      */
-     static void main(String[] args) {
+    public static void main(String[] args) {
         String serverVersion = Main.class.getPackage().getImplementationVersion();
         if (serverVersion == null || serverVersion.isBlank()) {
             serverVersion = "unknown";
