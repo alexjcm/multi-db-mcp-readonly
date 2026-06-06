@@ -81,11 +81,25 @@ CONNECTIONS_FILE=/path/to/connections.json
 java -jar build/libs/multi-db-mcp-readonly-*-all.jar
 ```
 
+### Generate Metadata (First time only)
+
+```bash
+# Set GraalVM environment
+export JAVA_HOME=$(path_to_graalvm)/Contents/Home
+./gradlew clean shadowJar
+mkdir -p src/main/resources/META-INF/native-image
+
+# Test all tools in MCP Inspector to auto generate metadata
+java -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image \
+     -jar build/libs/multi-db-mcp-readonly-2.0.0-all.jar
+```
+
 ### Native Image Mode
 
 ```bash
 # Build native binary (requires GraalVM)
 export JAVA_HOME=$(path_to_graalvm)/Contents/Home
+export PATH=$JAVA_HOME/bin:$PATH
 ./gradlew clean nativeCompile
 
 # Run (much faster startup)
@@ -111,7 +125,7 @@ Add to your `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "multi-db": {
+    "multi-db-mcp-readonly": {
       "command": "java",
       "args": ["-jar", "/path/to/multi-db-mcp-readonly-*-all.jar"],
       "env": {
@@ -124,7 +138,21 @@ Add to your `claude_desktop_config.json`:
 
 ### Windsurf
 
-Configure in your MCP settings to connect to the running server.
+Edit your MCP configuration file:
+
+```json
+{
+  "mcpServers": {
+    "multi-db-mcp-readonly": {
+      "command": "/path/to/multi-db-mcp-readonly/build/native/nativeCompile/multi-db-mcp-readonly",
+      "args": [],
+      "env": {
+        "CONNECTIONS_FILE": "/path/to/your/connections.json"
+      }
+    }
+  }
+}
+```
 
 ## Database-Specific Features
 
@@ -171,7 +199,7 @@ See `SingleStoreConnectionService.java` as a reference implementation.
 
 - **MCP SDK**: `io.modelcontextprotocol.sdk:mcp-*`
 - **DB2 Driver**: `net.sf.jt400:jt400:21.0.6`
-- **SingleStore Driver**: `com.singlestore:singlestore-jdbc-client:1.2.8`
+- **SingleStore Driver**: `com.singlestore:singlestore-jdbc-client:1.2.11`
 
 ## AI Client Configuration
 
@@ -270,4 +298,5 @@ Start Codex and run `/mcp` to see your active MCP servers. Test with:
 
 ## License
 
-[Add your license here]
+MIT License
+
