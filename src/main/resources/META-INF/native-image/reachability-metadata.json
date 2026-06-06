@@ -109,6 +109,391 @@
       ]
     },
     {
+      "type": "com.singlestore.jdbc.Configuration",
+      "fields": [
+        {
+          "name": "EXCLUDED_FIELDS"
+        },
+        {
+          "name": "PROPERTIES_TO_SKIP"
+        },
+        {
+          "name": "SECURE_FIELDS"
+        },
+        {
+          "name": "SENSITIVE_FIELDS"
+        },
+        {
+          "name": "allowLocalInfile"
+        },
+        {
+          "name": "allowMultiQueries"
+        },
+        {
+          "name": "autocommit"
+        },
+        {
+          "name": "blankTableNameMeta"
+        },
+        {
+          "name": "cacheJaasLoginContext"
+        },
+        {
+          "name": "cachePrepStmts"
+        },
+        {
+          "name": "codecs"
+        },
+        {
+          "name": "connectTimeout"
+        },
+        {
+          "name": "connectionAttributes"
+        },
+        {
+          "name": "consoleLogFilepath"
+        },
+        {
+          "name": "consoleLogLevel"
+        },
+        {
+          "name": "createDatabaseIfNotExist"
+        },
+        {
+          "name": "credentialType"
+        },
+        {
+          "name": "defaultFetchSize"
+        },
+        {
+          "name": "disablePipeline"
+        },
+        {
+          "name": "dumpQueriesOnException"
+        },
+        {
+          "name": "enableExtendedDataTypes"
+        },
+        {
+          "name": "enabledSslCipherSuites"
+        },
+        {
+          "name": "enabledSslProtocolSuites"
+        },
+        {
+          "name": "geometryDefaultType"
+        },
+        {
+          "name": "hostNameInCertificate"
+        },
+        {
+          "name": "includeThreadDumpInDeadlockExceptions"
+        },
+        {
+          "name": "initSql"
+        },
+        {
+          "name": "initialUrl"
+        },
+        {
+          "name": "jaasApplicationName"
+        },
+        {
+          "name": "keyPassword"
+        },
+        {
+          "name": "keyStore"
+        },
+        {
+          "name": "keyStorePassword"
+        },
+        {
+          "name": "keyStoreType"
+        },
+        {
+          "name": "localSocket"
+        },
+        {
+          "name": "localSocketAddress"
+        },
+        {
+          "name": "maxAllowedPacket"
+        },
+        {
+          "name": "maxIdleTime"
+        },
+        {
+          "name": "maxPoolSize"
+        },
+        {
+          "name": "maxPrintStackSizeToLog"
+        },
+        {
+          "name": "maxQuerySizeToLog"
+        },
+        {
+          "name": "minPoolSize"
+        },
+        {
+          "name": "nonMappedOptions"
+        },
+        {
+          "name": "nullDatabaseMeansCurrent"
+        },
+        {
+          "name": "password"
+        },
+        {
+          "name": "pipe"
+        },
+        {
+          "name": "pool"
+        },
+        {
+          "name": "poolName"
+        },
+        {
+          "name": "poolValidMinDelay"
+        },
+        {
+          "name": "prepStmtCacheSize"
+        },
+        {
+          "name": "printStackTrace"
+        },
+        {
+          "name": "registerJmxPool"
+        },
+        {
+          "name": "restrictedAuth"
+        },
+        {
+          "name": "retriesAllDown"
+        },
+        {
+          "name": "rewriteBatchedStatements"
+        },
+        {
+          "name": "serverSslCert"
+        },
+        {
+          "name": "servicePrincipalName"
+        },
+        {
+          "name": "sessionVariables"
+        },
+        {
+          "name": "socketFactory"
+        },
+        {
+          "name": "socketTimeout"
+        },
+        {
+          "name": "socksProxyHost"
+        },
+        {
+          "name": "socksProxyPort"
+        },
+        {
+          "name": "sslMode"
+        },
+        {
+          "name": "tcpAbortiveClose"
+        },
+        {
+          "name": "tcpKeepAlive"
+        },
+        {
+          "name": "tcpKeepCount"
+        },
+        {
+          "name": "tcpKeepIdle"
+        },
+        {
+          "name": "tcpKeepInterval"
+        },
+        {
+          "name": "tinyInt1isBit"
+        },
+        {
+          "name": "tlsSocketType"
+        },
+        {
+          "name": "transactionReplay"
+        },
+        {
+          "name": "transactionReplaySize"
+        },
+        {
+          "name": "transformedBitIsBoolean"
+        },
+        {
+          "name": "trustStore"
+        },
+        {
+          "name": "trustStorePassword"
+        },
+        {
+          "name": "trustStoreType"
+        },
+        {
+          "name": "useAffectedRows"
+        },
+        {
+          "name": "useCompression"
+        },
+        {
+          "name": "useMysqlMetadata"
+        },
+        {
+          "name": "useMysqlVersion"
+        },
+        {
+          "name": "useReadAheadInput"
+        },
+        {
+          "name": "useResetConnection"
+        },
+        {
+          "name": "useServerPrepStmts"
+        },
+        {
+          "name": "user"
+        },
+        {
+          "name": "vectorExtendedMetadata"
+        },
+        {
+          "name": "vectorTypeOutputFormat"
+        },
+        {
+          "name": "yearIsDateType"
+        }
+      ]
+    },
+    {
+      "type": "com.singlestore.jdbc.Configuration$Builder",
+      "methods": [
+        {
+          "name": "password",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "user",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "com.singlestore.jdbc.Driver"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.BigDecimalCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.BigIntegerCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.BitSetCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.BlobCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.BooleanCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.ByteArrayCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.ByteCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.ClobCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.DateCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.DoubleCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.DurationCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.FloatArrayCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.FloatCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.FloatObjectArrayCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.InstantCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.IntCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.LineStringCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.LocalDateCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.LocalDateTimeCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.LocalTimeCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.LongCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.OffsetDateTimeCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.PointCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.PolygonCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.ReaderCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.ShortCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.StreamCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.StringCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.TimeCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.TimestampCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.UuidCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.VectorCodec"
+    },
+    {
+      "type": "com.singlestore.jdbc.plugin.codec.ZonedDateTimeCodec"
+    },
+    {
+      "type": "float[]"
+    },
+    {
       "type": "io.ajcm.db2.ibmi.mcp.Main",
       "jniAccessible": true,
       "methods": [
@@ -711,6 +1096,9 @@
       "allDeclaredFields": true
     },
     {
+      "type": "java.lang.Float[]"
+    },
+    {
       "type": "java.lang.Iterable"
     },
     {
@@ -741,6 +1129,9 @@
           ]
         }
       ]
+    },
+    {
+      "type": "java.lang.String[]"
     },
     {
       "type": "java.lang.System",
@@ -841,8 +1232,14 @@
       "allDeclaredFields": true
     },
     {
+      "type": "java.util.ImmutableCollections$List12"
+    },
+    {
       "type": "java.util.ImmutableCollections$ListN",
       "allDeclaredFields": true
+    },
+    {
+      "type": "java.util.ImmutableCollections$Map1"
     },
     {
       "type": "java.util.ImmutableCollections$MapN",
@@ -877,6 +1274,9 @@
       ]
     },
     {
+      "type": "org.slf4j.LoggerFactory"
+    },
+    {
       "type": "org.slf4j.simple.SimpleServiceProvider"
     },
     {
@@ -908,6 +1308,9 @@
           "name": "wip"
         }
       ]
+    },
+    {
+      "type": "reactor.core.publisher.FluxOnErrorReturn$ReturnSubscriber"
     },
     {
       "type": "reactor.core.publisher.FluxPublishOn$PublishOnConditionalSubscriber",
@@ -944,6 +1347,9 @@
           "name": "state"
         }
       ]
+    },
+    {
+      "type": "reactor.core.publisher.LambdaMonoSubscriber"
     },
     {
       "type": "reactor.core.publisher.LambdaSubscriber",

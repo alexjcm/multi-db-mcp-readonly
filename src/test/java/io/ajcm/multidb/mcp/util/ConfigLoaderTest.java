@@ -33,7 +33,7 @@ class ConfigLoaderTest {
                   "id": "test_db2",
                   "type": "DB2_IBMI",
                   "host": "localhost",
-                  "port": 446,
+                  "port": 8471,
                   "user": "testuser",
                   "password": "testpass",
                   "database": "TESTLIB",
@@ -66,7 +66,7 @@ class ConfigLoaderTest {
         assertEquals("test_db2", db2Config.id());
         assertEquals(DbType.DB2_IBMI, db2Config.type());
         assertEquals("localhost", db2Config.host());
-        assertEquals(446, db2Config.port());
+        assertEquals(8471, db2Config.port());
         assertEquals("testuser", db2Config.user());
         assertEquals("testpass", db2Config.password());
         assertEquals("TESTLIB", db2Config.database());
@@ -111,11 +111,11 @@ class ConfigLoaderTest {
         assertEquals("minimal", config.id());
         assertEquals(DbType.DB2_IBMI, config.type());
         assertEquals("localhost", config.host());
-        assertEquals(446, config.port()); // Default DB2 port
+        assertEquals(8471, config.port()); // Default DB2 port
         assertEquals("testuser", config.user());
         assertEquals("testpass", config.password());
         assertEquals("TESTLIB", config.database());
-        assertFalse(config.ssl()); // Default SSL
+        assertTrue(config.ssl()); // Default SSL
         assertNull(config.description()); // Optional field
     }
 

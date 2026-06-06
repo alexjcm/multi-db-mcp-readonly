@@ -18,9 +18,16 @@ import java.util.*;
 public class SingleStoreConnectionService implements DbConnectionProvider {
     private static final Logger log = LoggerFactory.getLogger(SingleStoreConnectionService.class);
     private static final ObjectMapper mapper = new ObjectMapper();
+    private static final String JDBC_DRIVER_CLASS = "com.singlestore.jdbc.Driver";
     
     private final ConnectionConfig config;
     private final String jdbcUrl;
+    
+    // Error details for observability
+    private String lastError;
+    private String lastErrorType;
+    private String lastSqlState;
+    private int lastErrorCode;
     
     public SingleStoreConnectionService(ConnectionConfig config) {
         if (config.type() != DbType.SINGLESTORE) {
@@ -32,6 +39,8 @@ public class SingleStoreConnectionService implements DbConnectionProvider {
         // Build JDBC URL
         this.jdbcUrl = String.format("jdbc:singlestore://%s:%d/%s", 
             config.host(), config.port(), config.database());
+
+        registerDriver();
     }
     
     @Override
@@ -40,6 +49,11 @@ public class SingleStoreConnectionService implements DbConnectionProvider {
             return conn != null && !conn.isClosed();
         } catch (SQLException e) {
             log.warn("SingleStore health check failed for {}: {}", config.id(), e.getMessage());
+            // Store error details for observability
+            lastError = e.getMessage();
+            lastErrorType = e.getClass().getSimpleName();
+            lastSqlState = e.getSQLState();
+            lastErrorCode = e.getErrorCode();
             return false;
         }
     }
@@ -160,14 +174,50 @@ public class SingleStoreConnectionService implements DbConnectionProvider {
         // SingleStore connections are handled per-operation, no persistent connection to close
     }
     
+    @Override
+    public String getLastError() {
+        return lastError;
+    }
+    
+    @Override
+    public String getLastErrorType() {
+        return lastErrorType;
+    }
+    
+    @Override
+    public String getLastSqlState() {
+        return lastSqlState;
+    }
+    
+    @Override
+    public int getLastErrorCode() {
+        return lastErrorCode;
+    }
+    
     private Connection getConnection() throws SQLException {
+        log.info("DIAGNOSTIC: SingleStore connecting - ID: {}, User: '{}', Password length: {}, Host: {}, Port: {}, Database: {}", 
+                 config.id(), config.user(), config.password().length(), config.host(), config.port(), config.database());
+        log.info("DIAGNOSTIC: SingleStore JDBC URL: {}", jdbcUrl);
+        
         Properties props = new Properties();
         props.setProperty("user", config.user());
         props.setProperty("password", config.password());
         if (config.ssl()) {
             props.setProperty("useSSL", "true");
         }
+        
+        log.info("DIAGNOSTIC: SingleStore Properties configured - User in props: '{}', Password in props: '{}'", 
+                 props.getProperty("user"), props.getProperty("password").isEmpty() ? "EMPTY" : "SET");
+        
         return DriverManager.getConnection(jdbcUrl, props);
+    }
+
+    private static void registerDriver() {
+        try {
+            Class.forName(JDBC_DRIVER_CLASS);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("SingleStore JDBC driver is not available on the classpath", e);
+        }
     }
     
     private List<TableMetadata.ColumnInfo> getColumns(String schema, String table) {

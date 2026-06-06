@@ -4,7 +4,7 @@
       "id": "db2_prod",
       "type": "DB2_IBMI",
       "host": "as400.company.com",
-      "port": 446,
+      "port": 8471,
       "user": "USRPRD",
       "password": "secret",
       "database": "PRODLIB",

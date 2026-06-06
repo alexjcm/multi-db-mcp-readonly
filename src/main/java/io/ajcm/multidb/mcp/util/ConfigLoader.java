@@ -13,7 +13,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Loads and validates connection configuration from JSON file.
@@ -53,10 +55,14 @@ public class ConfigLoader {
             
             ArrayNode connectionsArray = (ArrayNode) connectionsNode;
             List<ConnectionConfig> configs = new ArrayList<>();
+            Set<String> connectionIds = new HashSet<>();
             
             for (int i = 0; i < connectionsArray.size(); i++) {
                 JsonNode connNode = connectionsArray.get(i);
                 ConnectionConfig config = parseConnectionConfig(connNode, i);
+                if (!connectionIds.add(config.id())) {
+                    throw new IllegalArgumentException("Duplicate connection id: " + config.id());
+                }
                 configs.add(config);
             }
             
@@ -114,7 +120,7 @@ public class ConfigLoader {
      */
     private static int getDefaultPort(String type) {
         return switch (type) {
-            case "DB2_IBMI" -> 446;
+            case "DB2_IBMI" -> 8471;
             case "SINGLESTORE" -> 3306;
             default -> throw new IllegalArgumentException("Unknown database type: " + type);
         };

@@ -56,4 +56,32 @@ public interface DbConnectionProvider {
      * Closes the connection and cleans up resources.
      */
     void close();
+    
+    /**
+     * Gets the last error message from health check (for observability).
+     * 
+     * @return last error message or null if no error
+     */
+    String getLastError();
+    
+    /**
+     * Gets the last error type from health check (for observability).
+     * 
+     * @return last error type or null if no error
+     */
+    String getLastErrorType();
+    
+    /**
+     * Gets the last SQL state from health check (for observability).
+     * 
+     * @return last SQL state or null if no error
+     */
+    String getLastSqlState();
+    
+    /**
+     * Gets the last error code from health check (for observability).
+     * 
+     * @return last error code or 0 if no error
+     */
+    int getLastErrorCode();
 }

@@ -22,10 +22,19 @@ public class Db2ConnectionService implements DbConnectionProvider {
     private final ConnectionConfig config;
     private final AS400JDBCDataSource dataSource;
     
+    // Error details for observability
+    private String lastError;
+    private String lastErrorType;
+    private String lastSqlState;
+    private int lastErrorCode;
+    
     public Db2ConnectionService(ConnectionConfig config) {
         if (config.type() != DbType.DB2_IBMI) {
             throw new IllegalArgumentException("Db2ConnectionService only supports DB2_IBMI type");
         }
+        
+        log.info("DIAGNOSTIC: DB2 connecting - ID: {}, User: '{}', Password length: {}, Host: {}, Port: {}, Database: {}", 
+                 config.id(), config.user(), config.password().length(), config.host(), config.port(), config.database());
         
         this.config = config;
         this.dataSource = new AS400JDBCDataSource();
@@ -35,6 +44,10 @@ public class Db2ConnectionService implements DbConnectionProvider {
         this.dataSource.setPassword(config.password());
         this.dataSource.setDatabaseName(config.database());
         this.dataSource.setSecure(config.ssl());
+        
+        log.info("DIAGNOSTIC: DB2 DataSource configured - Server: {}, Port: {}, User: {}, Database: {}, SSL: {}", 
+                 this.dataSource.getServerName(), this.dataSource.getPortNumber(), 
+                 this.dataSource.getUser(), this.dataSource.getDatabaseName(), this.dataSource.isSecure());
     }
     
     @Override
@@ -43,6 +56,11 @@ public class Db2ConnectionService implements DbConnectionProvider {
             return conn != null && !conn.isClosed();
         } catch (SQLException e) {
             log.warn("DB2 health check failed for {}: {}", config.id(), e.getMessage());
+            // Store error details for observability
+            lastError = e.getMessage();
+            lastErrorType = e.getClass().getSimpleName();
+            lastSqlState = e.getSQLState();
+            lastErrorCode = e.getErrorCode();
             return false;
         }
     }
@@ -158,6 +176,26 @@ public class Db2ConnectionService implements DbConnectionProvider {
     @Override
     public void close() {
         // DB2 connections are handled per-operation, no persistent connection to close
+    }
+    
+    @Override
+    public String getLastError() {
+        return lastError;
+    }
+    
+    @Override
+    public String getLastErrorType() {
+        return lastErrorType;
+    }
+    
+    @Override
+    public String getLastSqlState() {
+        return lastSqlState;
+    }
+    
+    @Override
+    public int getLastErrorCode() {
+        return lastErrorCode;
     }
     
     private Connection getConnection() throws SQLException {

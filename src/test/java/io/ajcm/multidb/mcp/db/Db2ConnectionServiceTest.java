@@ -6,9 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 
-import java.util.List;
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class Db2ConnectionServiceTest {
@@ -68,9 +65,10 @@ class Db2ConnectionServiceTest {
 
     @Test
     void testExecuteSelectWithInvalidConnection() {
-        // Should throw exception for invalid connection
-        assertThrows(Exception.class, () -> {
-            service.executeSelect("SELECT * FROM TESTLIB.TESTTABLE");
+        assertDoesNotThrow(() -> {
+            String result = service.executeSelect("SELECT * FROM TESTLIB.TESTTABLE");
+            assertTrue(result.contains("\"success\":false"));
+            assertTrue(result.contains("\"error_type\":\"QUERY_ERROR\""));
         });
     }
 
@@ -96,13 +94,12 @@ class Db2ConnectionServiceTest {
 
     @Test
     void testExecuteSelectWithValidSelectSql() throws Exception {
-        // Valid SELECT should pass validation (even if connection fails)
         String validSql = "SELECT column1, column2 FROM TESTLIB.TESTTABLE WHERE column1 = 'value'";
-        
-        // This will fail due to connection, but should pass SQL validation
-        assertThrows(Exception.class, () -> {
-            service.executeSelect(validSql);
-        });
+
+        String result = service.executeSelect(validSql);
+
+        assertTrue(result.contains("\"success\":false"));
+        assertTrue(result.contains("\"error_type\":\"QUERY_ERROR\""));
     }
 
     @Test

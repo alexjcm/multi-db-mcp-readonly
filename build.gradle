@@ -23,7 +23,7 @@ dependencies {
     implementation 'io.modelcontextprotocol.sdk:mcp-core'
     implementation 'io.modelcontextprotocol.sdk:mcp-json-jackson2'
     implementation 'net.sf.jt400:jt400:21.0.6'
-    implementation 'com.singlestore:singlestore-jdbc-client:1.2.8'
+    implementation 'com.singlestore:singlestore-jdbc-client:1.2.11'
     runtimeOnly 'org.slf4j:slf4j-simple:2.0.18'
     
     testImplementation platform('org.junit:junit-bom:6.1.0')
@@ -45,3 +45,8 @@ tasks.withType(Jar).configureEach {
         attributes('Implementation-Version': project.version)
     }
 }
+
+//// Configure shadowJar to merge JDBC driver services
+//shadowJar {
+//    mergeServiceFiles()
+//}

@@ -10,6 +10,8 @@ import io.ajcm.multidb.mcp.db.DbConnectionProvider;
 import java.util.Map;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Smart tools with intelligent defaults:
@@ -18,6 +20,7 @@ import java.util.Optional;
  * - Default connection: DB2 Ecuador
  */
 public class SmartDefaultToolBuilder {
+    private static final Logger log = LoggerFactory.getLogger(SmartDefaultToolBuilder.class);
     private static final ObjectMapper mapper = new ObjectMapper();
     
     /**
@@ -186,19 +189,42 @@ public class SmartDefaultToolBuilder {
                     ConnectionConfig config = provider.getConfig();
                     boolean isDefault = provider == getDefaultProvider(providers);
                     
-                    String result = mapper.createObjectNode()
-                            .put("success", true)
+                    log.info("DIAGNOSTIC: Health check result - Connection: {}, Healthy: {}, Default: {}", 
+                             connectionId, isHealthy, isDefault);
+                    
+                    ObjectNode result = mapper.createObjectNode()
+                            .put("success", isHealthy)  // ✅ Corregido: reflejar estado real
                             .put("connection_id", connectionId)
                             .put("is_default", isDefault)
                             .put("status", isHealthy ? "connected" : "disconnected")
                             .put("database_type", config.type().toString())
                             .put("database", config.database())
                             .put("host", config.host())
-                            .put("port", config.port())
-                            .toString();
+                            .put("port", config.port());
+                    
+                    // Add error details for observability when connection fails
+                    if (!isHealthy) {
+                        String lastError = provider.getLastError();
+                        String lastErrorType = provider.getLastErrorType();
+                        String lastSqlState = provider.getLastSqlState();
+                        int lastErrorCode = provider.getLastErrorCode();
+                        
+                        if (lastError != null) {
+                            result.put("error_message", lastError);
+                        }
+                        if (lastErrorType != null) {
+                            result.put("error_type", lastErrorType);
+                        }
+                        if (lastSqlState != null) {
+                            result.put("sql_state", lastSqlState);
+                        }
+                        if (lastErrorCode != 0) {
+                            result.put("error_code", lastErrorCode);
+                        }
+                    }
                     
                     return McpSchema.CallToolResult.builder()
-                            .content(List.of(new McpSchema.TextContent(result)))
+                            .content(List.of(new McpSchema.TextContent(result.toString())))
                             .isError(false)
                             .build();
                 } catch (Exception e) {

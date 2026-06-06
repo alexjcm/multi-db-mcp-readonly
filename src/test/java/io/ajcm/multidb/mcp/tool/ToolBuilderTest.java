@@ -4,11 +4,8 @@ import io.ajcm.multidb.mcp.config.ConnectionConfig;
 import io.ajcm.multidb.mcp.config.DbType;
 import io.ajcm.multidb.mcp.db.DbConnectionProvider;
 import io.modelcontextprotocol.server.McpServerFeatures;
-import io.modelcontextprotocol.spec.McpSchema;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -73,6 +70,26 @@ class ToolBuilderTest {
             @Override
             public void close() {
             }
+
+            @Override
+            public String getLastError() {
+                return null;
+            }
+
+            @Override
+            public String getLastErrorType() {
+                return null;
+            }
+
+            @Override
+            public String getLastSqlState() {
+                return null;
+            }
+
+            @Override
+            public int getLastErrorCode() {
+                return 0;
+            }
         };
     }
 
@@ -83,7 +100,7 @@ class ToolBuilderTest {
         assertNotNull(tool);
         assertEquals("health_test_db2", tool.tool().name());
         assertTrue(tool.tool().description().contains("DB2 for i"));
-        assertTrue(tool.tool().description().contains("test_db2"));
+        assertTrue(tool.tool().title().contains("test_db2"));
         assertNotNull(tool.tool().inputSchema());
         assertNotNull(tool.callHandler());
     }
@@ -107,7 +124,7 @@ class ToolBuilderTest {
         assertNotNull(tool);
         assertEquals("describe_table_test_db2", tool.tool().name());
         assertTrue(tool.tool().description().contains("DB2 for i"));
-        assertTrue(tool.tool().description().contains("test_db2"));
+        assertTrue(tool.tool().title().contains("test_db2"));
         assertNotNull(tool.tool().inputSchema());
         assertNotNull(tool.callHandler());
     }
@@ -119,7 +136,7 @@ class ToolBuilderTest {
         assertNotNull(tool);
         assertEquals("execute_select_test_db2", tool.tool().name());
         assertTrue(tool.tool().description().contains("DB2 for i"));
-        assertTrue(tool.tool().description().contains("test_db2"));
+        assertTrue(tool.tool().title().contains("test_db2"));
         assertTrue(tool.tool().description().contains("read-only"));
         assertNotNull(tool.tool().inputSchema());
         assertNotNull(tool.callHandler());
