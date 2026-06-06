@@ -26,13 +26,13 @@ class ListTablesToolTest {
 
     @Test
     void cursorTokenRoundTripPreservesPaginationState() {
-        DbClient.TablePageCursor cursor = new DbClient.TablePageCursor("SMXSIC", "%CLIENT%", "CLIENTES", "T");
+        DbClient.TablePageCursor cursor = new DbClient.TablePageCursor("TEST_SCHEMA", "%CLIENT%", "CLIENTES", "T");
         String token = ListTablesTool.encodeCursorToken("ECUADOR", cursor, 3157L);
 
         ListTablesTool.DecodedCursor decoded = ListTablesTool.decodeCursorToken(token);
 
         assertEquals("ECUADOR", decoded.connectionId());
-        assertEquals("SMXSIC", decoded.pageCursor().schema());
+        assertEquals("TEST_SCHEMA", decoded.pageCursor().schema());
         assertEquals("%CLIENT%", decoded.pageCursor().tablePattern());
         assertEquals("CLIENTES", decoded.pageCursor().lastTableName());
         assertEquals("T", decoded.pageCursor().lastTableType());

@@ -29,3 +29,16 @@ src/main/resources/META-INF/native-image/.lock
 src/main/resources/META-INF/native-image/agent-pid*.tmp*/
 
 TODO.md
+
+# Database connection files with sensitive data
+connections-*.json
+!connections.json.example
+
+# MCP Inspector configuration files
+mcp-inspector-*.json
+
+# Temporary test files
+test-connections-*.json
+
+# Compiled Java files (should be in target/classes)
+*.class

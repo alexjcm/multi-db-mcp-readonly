@@ -1,4 +1,4 @@
-package io.ajcm.db2.ibmi.mcp.validation;
+package io.ajcm.multidb.mcp.validation;
 
 import java.util.Locale;
 import java.util.regex.Matcher;

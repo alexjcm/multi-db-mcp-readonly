@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'io.ajcm'
-version = '1.0.1'
+version = '2.0.0'
 
 java {
     toolchain {
@@ -23,6 +23,7 @@ dependencies {
     implementation 'io.modelcontextprotocol.sdk:mcp-core'
     implementation 'io.modelcontextprotocol.sdk:mcp-json-jackson2'
     implementation 'net.sf.jt400:jt400:21.0.6'
+    implementation 'com.singlestore:singlestore-jdbc-client:1.2.8'
     runtimeOnly 'org.slf4j:slf4j-simple:2.0.18'
     
     testImplementation platform('org.junit:junit-bom:6.1.0')
@@ -36,7 +37,7 @@ test {
 }
 
 application {
-    mainClass = "io.ajcm.db2.ibmi.mcp.Main"
+    mainClass = "io.ajcm.multidb.mcp.Main"
 }
 
 tasks.withType(Jar).configureEach {

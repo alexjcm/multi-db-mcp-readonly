@@ -1,0 +1,28 @@
+{
+  "connections": [
+    {
+      "id": "db2_prod",
+      "type": "DB2_IBMI",
+      "host": "as400.company.com",
+      "port": 446,
+      "user": "USRPRD",
+      "password": "secret",
+      "database": "PRODLIB",
+      "ssl": true,
+      "description": "DB2 for i production — IBM AS/400 PRODLIB library"
+    },
+    {
+      "id": "ss_ventas",
+      "type": "SINGLESTORE",
+      "host": "svc-xxx.singlestore.com",
+      "port": 3306,
+      "user": "admin",
+      "password": "secret",
+      "database": "ventas",
+      "ssl": true,
+      "description": "SingleStore production — sales and orders database"
+    }
+  ],
+  "query_timeout_sec": 30,
+  "login_timeout_sec": 5
+}

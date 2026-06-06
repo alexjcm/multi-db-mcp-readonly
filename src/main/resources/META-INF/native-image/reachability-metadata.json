@@ -79,9 +79,6 @@
       ]
     },
     {
-      "type": "com.ibm.as400.access.Properties"
-    },
-    {
       "type": "com.ibm.as400.access.JDConnectionProxy",
       "methods": [
         {
@@ -89,6 +86,9 @@
           "parameterTypes": []
         }
       ]
+    },
+    {
+      "type": "com.ibm.as400.access.Properties"
     },
     {
       "type": "com.ibm.as400.access.SocketContainerInet",
@@ -202,11 +202,23 @@
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$ClientCapabilities$Elicitation$Form",
-      "allDeclaredFields": true
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$ClientCapabilities$Elicitation$Url",
-      "allDeclaredFields": true
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$ClientCapabilities$RootCapabilities",
@@ -680,6 +692,10 @@
       "methods": [
         {
           "name": "getRecordComponents",
+          "parameterTypes": []
+        },
+        {
+          "name": "isRecord",
           "parameterTypes": []
         }
       ]
