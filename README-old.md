@@ -22,7 +22,7 @@ Test all tools in MCP Inspector to auto generate metadata:
 - Command:
 /Users/ajcm/Library/Java/JavaVirtualMachines/graalvm-jdk-25.0.2+10.1/Contents/Home/bin/java
 - Arguments:
--agentlib:native-image-agent=config-merge-dir=/Users/ajcm/my-mcps/db2-ibmi-mcp-readonly/src/main/resources/META-INF/native-image -jar /Users/ajcm/my-mcps/db2-ibmi-mcp-readonly/build/libs/db2-ibmi-mcp-readonly-1.0.1-all.jar
+-agentlib:native-image-agent=config-merge-dir=/Users/ajcm/my-mcps/db2-ibmi-mcp-readonly/src/main/resources/META-INF/native-image -jar /Users/ajcm/my-mcps/db2-ibmi-mcp-readonly/build/libs/multi-db-mcp-readonly-2.0.0-all.jar
 
 ### Build
 export JAVA_HOME=/Users/ajcm/Library/Java/JavaVirtualMachines/graalvm-jdk-25.0.2+10.1/Contents/Home
@@ -30,7 +30,7 @@ export PATH=$JAVA_HOME/bin:$PATH
 ./gradlew clean nativeCompile
 
 ### Run for validation
-./build/native/nativeCompile/db2-ibmi-mcp-readonly
+./build/native/nativeCompile/multi-db-mcp-readonly
 
 
 ## Java Mode (Alternative)

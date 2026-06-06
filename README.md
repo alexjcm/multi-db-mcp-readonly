@@ -33,7 +33,7 @@ Configure connections via `connections.json`:
       "id": "db2_prod",
       "type": "DB2_IBMI",
       "host": "as400.company.com",
-      "port": 446,
+      "port": 8471,
       "user": "DB2USER",
       "password": "password",
       "database": "PRODLIB",
@@ -75,7 +75,7 @@ CONNECTIONS_FILE=/path/to/connections.json
 
 ```bash
 # Build
-./gradlew shadowJar
+./gradlew clean shadowJar
 
 # Run
 java -jar build/libs/multi-db-mcp-readonly-*-all.jar
@@ -150,28 +150,6 @@ Configure in your MCP settings to connect to the running server.
 
 ## Development
 
-### Project Structure
-
-```
-src/main/java/io/ajcm/multidb/mcp/
-├── Main.java                    # MCP server entry point
-├── config/                     # Configuration management
-│   ├── ConnectionConfig.java
-│   └── DbType.java
-├── db/                         # Database layer
-│   ├── DbConnectionProvider.java
-│   ├── TableMetadata.java
-│   ├── Db2ConnectionService.java
-│   └── SingleStoreConnectionService.java
-├── tool/                       # MCP tool builders
-│   └── ToolBuilder.java
-├── util/                       # Utilities
-│   ├── ConfigLoader.java
-│   └── SingleStoreDDLParser.java
-└── validation/                 # SQL validation
-    └── SqlGuards.java
-```
-
 ### How to Add a New Database Type
 
 1. **Add enum value** to `DbType.java`
@@ -194,8 +172,6 @@ See `SingleStoreConnectionService.java` as a reference implementation.
 - **MCP SDK**: `io.modelcontextprotocol.sdk:mcp-*`
 - **DB2 Driver**: `net.sf.jt400:jt400:21.0.6`
 - **SingleStore Driver**: `com.singlestore:singlestore-jdbc-client:1.2.8`
-- **Jackson**: For JSON serialization
-- **SLF4J**: For logging
 
 ## AI Client Configuration
 
@@ -267,6 +243,30 @@ Edit `claude_desktop_config.json`:
 ```
 
 **Important:** Replace `/path/to/your/connections.json` with the actual path to your database configuration file.
+
+### Codex CLI
+
+#### Method 1: CLI Command (Recommended)
+```bash
+codex mcp add multi-db-mcp --env CONNECTIONS_FILE=/path/to/your/connections.json -- /path/to/multi-db-mcp-readonly/build/native/nativeCompile/multi-db-mcp-readonly
+```
+
+#### Method 2: config.toml
+Edit `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.multi-db-mcp]
+command = "/path/to/multi-db-mcp-readonly/build/native/nativeCompile/multi-db-mcp-readonly"
+args = []
+[mcp_servers.multi-db-mcp.env]
+CONNECTIONS_FILE = "/path/to/your/connections.json"
+```
+
+#### Verification
+Start Codex and run `/mcp` to see your active MCP servers. Test with:
+- "Check the health of all database connections"
+- "List tables in the Ecuador database"
+- "Describe the CLIENTES table"
 
 ## License
 
