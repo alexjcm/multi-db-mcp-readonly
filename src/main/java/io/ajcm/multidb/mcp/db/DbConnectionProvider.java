@@ -1,9 +1,8 @@
 package io.ajcm.multidb.mcp.db;
 
-import io.ajcm.multidb.mcp.config.ConnectionConfig;
-import io.ajcm.multidb.mcp.db.TableMetadata;
-
 import java.util.List;
+
+import io.ajcm.multidb.mcp.config.ConnectionConfig;
 
 /**
  * Interface for database connection providers.

@@ -1,7 +1,11 @@
 package io.ajcm.multidb.mcp.util;
 
-import java.util.regex.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Parser para extraer SHARD KEY y SORT KEY del DDL de SingleStore
@@ -81,7 +85,6 @@ public class SingleStoreDDLParser {
      * Test del parser con ejemplos reales
      */
     public static void main(String[] args) {
-        // Ejemplo 1: Tabla con shard y sort key
         String ddl1 = """
             CREATE TABLE `orders` (
               `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -94,7 +97,6 @@ public class SingleStoreDDLParser {
             )
             """;
         
-        // Ejemplo 2: Tabla con solo shard key
         String ddl2 = """
             CREATE TABLE `products` (
               `id` int(11) NOT NULL,
@@ -105,7 +107,6 @@ public class SingleStoreDDLParser {
             )
             """;
         
-        // Ejemplo 3: Tabla sin keys específicas
         String ddl3 = """
             CREATE TABLE `logs` (
               `id` bigint(20) NOT NULL AUTO_INCREMENT,

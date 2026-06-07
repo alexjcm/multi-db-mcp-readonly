@@ -1,17 +1,16 @@
 package io.ajcm.multidb.mcp.tool;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.modelcontextprotocol.server.McpServerFeatures;
-import io.modelcontextprotocol.spec.McpSchema;
 import io.ajcm.multidb.mcp.config.ConnectionConfig;
 import io.ajcm.multidb.mcp.config.DbType;
 import io.ajcm.multidb.mcp.db.DbConnectionProvider;
-import java.util.Map;
-import java.util.List;
-import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.modelcontextprotocol.server.McpServerFeatures;
+import io.modelcontextprotocol.spec.McpSchema;
 
 /**
  * Smart tools with intelligent defaults:
@@ -20,8 +19,11 @@ import org.slf4j.LoggerFactory;
  * - Default connection: DB2 Ecuador
  */
 public class SmartDefaultToolBuilder {
-    private static final Logger log = LoggerFactory.getLogger(SmartDefaultToolBuilder.class);
     private static final ObjectMapper mapper = new ObjectMapper();
+    
+    private SmartDefaultToolBuilder() {
+        throw new UnsupportedOperationException("Utility class");
+    }
     
     /**
      * Gets the default connection provider based on smart rules:
@@ -189,11 +191,9 @@ public class SmartDefaultToolBuilder {
                     ConnectionConfig config = provider.getConfig();
                     boolean isDefault = provider == getDefaultProvider(providers);
                     
-                    log.info("DIAGNOSTIC: Health check result - Connection: {}, Healthy: {}, Default: {}", 
-                             connectionId, isHealthy, isDefault);
-                    
+                                        
                     ObjectNode result = mapper.createObjectNode()
-                            .put("success", isHealthy)  // ✅ Corregido: reflejar estado real
+                            .put("success", isHealthy)
                             .put("connection_id", connectionId)
                             .put("is_default", isDefault)
                             .put("status", isHealthy ? "connected" : "disconnected")

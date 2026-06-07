@@ -1,13 +1,5 @@
 package io.ajcm.multidb.mcp.util;
 
-import io.ajcm.multidb.mcp.config.ConnectionConfig;
-import io.ajcm.multidb.mcp.config.DbType;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,12 +9,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import io.ajcm.multidb.mcp.config.ConnectionConfig;
+import io.ajcm.multidb.mcp.config.DbType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Loads and validates connection configuration from JSON file.
  * Implements fail-fast validation - exits if configuration is invalid.
  */
 public class ConfigLoader {
     private static final Logger log = LoggerFactory.getLogger(ConfigLoader.class);
+    
+    private ConfigLoader() {
+        throw new UnsupportedOperationException("Utility class");
+    }
     private static final ObjectMapper mapper = new ObjectMapper();
     
     /**
@@ -99,14 +103,14 @@ public class ConfigLoader {
         String user = node.get("user").asText().trim();
         String password = node.get("password").asText().trim();
         String database = node.get("database").asText().trim();
-        boolean ssl = node.has("ssl") ? node.get("ssl").asBoolean() : true;
+        boolean ssl = node.has("ssl") && node.get("ssl").asBoolean();
         String description = node.has("description") ? node.get("description").asText().trim() : null;
         
         // Parse database type
         DbType dbType;
         try {
             dbType = DbType.valueOf(typeStr);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException _) {
             throw new IllegalArgumentException(String.format(
                 "Connection %d (%s): Invalid database type '%s'. Supported types: %s",
                 index, id, typeStr, java.util.Arrays.toString(DbType.values())));

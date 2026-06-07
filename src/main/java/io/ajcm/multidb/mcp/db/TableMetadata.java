@@ -1,9 +1,9 @@
 package io.ajcm.multidb.mcp.db;
 
-import io.ajcm.multidb.mcp.config.DbType;
-
 import java.util.List;
 import java.util.Map;
+
+import io.ajcm.multidb.mcp.config.DbType;
 
 /**
  * Metadata for a database table.

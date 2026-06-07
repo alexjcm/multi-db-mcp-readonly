@@ -1,15 +1,23 @@
 package io.ajcm.multidb.mcp.db;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ibm.as400.access.AS400JDBCDataSource;
 import io.ajcm.multidb.mcp.config.ConnectionConfig;
 import io.ajcm.multidb.mcp.config.DbType;
 import io.ajcm.multidb.mcp.validation.SqlGuards;
-import com.ibm.as400.access.AS400JDBCDataSource;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.sql.*;
-import java.util.*;
 
 /**
  * DB2 for i (IBM i) connection provider implementing DbConnectionProvider.
@@ -33,9 +41,7 @@ public class Db2ConnectionService implements DbConnectionProvider {
             throw new IllegalArgumentException("Db2ConnectionService only supports DB2_IBMI type");
         }
         
-        log.info("DIAGNOSTIC: DB2 connecting - ID: {}, User: '{}', Password length: {}, Host: {}, Port: {}, Database: {}", 
-                 config.id(), config.user(), config.password().length(), config.host(), config.port(), config.database());
-        
+                
         this.config = config;
         this.dataSource = new AS400JDBCDataSource();
         this.dataSource.setServerName(config.host());
@@ -44,10 +50,6 @@ public class Db2ConnectionService implements DbConnectionProvider {
         this.dataSource.setPassword(config.password());
         this.dataSource.setDatabaseName(config.database());
         this.dataSource.setSecure(config.ssl());
-        
-        log.info("DIAGNOSTIC: DB2 DataSource configured - Server: {}, Port: {}, User: {}, Database: {}, SSL: {}", 
-                 this.dataSource.getServerName(), this.dataSource.getPortNumber(), 
-                 this.dataSource.getUser(), this.dataSource.getDatabaseName(), this.dataSource.isSecure());
     }
     
     @Override

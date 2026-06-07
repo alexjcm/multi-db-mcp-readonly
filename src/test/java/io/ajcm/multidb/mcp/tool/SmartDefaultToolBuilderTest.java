@@ -33,7 +33,7 @@ class SmartDefaultToolBuilderTest {
                 8471,
                 "user",
                 "pass",
-                "SMXSIC",
+                "MYDB",
                 false,
                 "Ecuador DB2"
         ), true);
@@ -45,7 +45,7 @@ class SmartDefaultToolBuilderTest {
                 3306,
                 "user",
                 "pass",
-                "SMXTLOG",
+                "MYDB2",
                 false,
                 "Ecuador SingleStore"
         ), true);
@@ -57,7 +57,7 @@ class SmartDefaultToolBuilderTest {
                 8471,
                 "user",
                 "pass",
-                "SMXSIC",
+                "MYDB",
                 false,
                 "Panama DB2"
         ), true);
@@ -94,7 +94,7 @@ class SmartDefaultToolBuilderTest {
         ));
 
         McpSchema.CallToolResult result = tool.callHandler().apply(null, new McpSchema.CallToolRequest("health", Map.of()));
-        String payload = ((McpSchema.TextContent) result.content().get(0)).text();
+        String payload = ((McpSchema.TextContent) result.content().getFirst()).text();
 
         assertFalse(Boolean.TRUE.equals(result.isError()));
         assertTrue(payload.contains("\"connection_id\":\"ecuador_db2\""));
@@ -110,7 +110,7 @@ class SmartDefaultToolBuilderTest {
 
         McpSchema.CallToolResult result = tool.callHandler()
                 .apply(null, new McpSchema.CallToolRequest("health", Map.of("connection_id", "missing")));
-        String payload = ((McpSchema.TextContent) result.content().get(0)).text();
+        String payload = ((McpSchema.TextContent) result.content().getFirst()).text();
 
         assertTrue(Boolean.TRUE.equals(result.isError()));
         assertTrue(payload.contains("\"error_type\":\"CONNECTION_NOT_FOUND\""));

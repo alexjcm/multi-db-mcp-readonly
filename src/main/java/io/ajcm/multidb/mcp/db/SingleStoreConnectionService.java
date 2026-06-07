@@ -1,15 +1,25 @@
 package io.ajcm.multidb.mcp.db;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.ajcm.multidb.mcp.config.ConnectionConfig;
 import io.ajcm.multidb.mcp.config.DbType;
 import io.ajcm.multidb.mcp.validation.SqlGuards;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.sql.*;
-import java.util.*;
 
 /**
  * SingleStore connection provider implementing DbConnectionProvider.
@@ -46,7 +56,7 @@ public class SingleStoreConnectionService implements DbConnectionProvider {
     @Override
     public boolean healthCheck() {
         try (Connection conn = getConnection()) {
-            return conn != null && !conn.isClosed();
+            return !conn.isClosed();
         } catch (SQLException e) {
             log.warn("SingleStore health check failed for {}: {}", config.id(), e.getMessage());
             // Store error details for observability
@@ -195,19 +205,13 @@ public class SingleStoreConnectionService implements DbConnectionProvider {
     }
     
     private Connection getConnection() throws SQLException {
-        log.info("DIAGNOSTIC: SingleStore connecting - ID: {}, User: '{}', Password length: {}, Host: {}, Port: {}, Database: {}", 
-                 config.id(), config.user(), config.password().length(), config.host(), config.port(), config.database());
-        log.info("DIAGNOSTIC: SingleStore JDBC URL: {}", jdbcUrl);
-        
+                        
         Properties props = new Properties();
         props.setProperty("user", config.user());
         props.setProperty("password", config.password());
         if (config.ssl()) {
             props.setProperty("useSSL", "true");
         }
-        
-        log.info("DIAGNOSTIC: SingleStore Properties configured - User in props: '{}', Password in props: '{}'", 
-                 props.getProperty("user"), props.getProperty("password").isEmpty() ? "EMPTY" : "SET");
         
         return DriverManager.getConnection(jdbcUrl, props);
     }

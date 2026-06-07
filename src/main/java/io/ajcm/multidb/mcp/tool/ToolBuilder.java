@@ -1,12 +1,13 @@
 package io.ajcm.multidb.mcp.tool;
 
+import java.util.List;
+import java.util.Map;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.modelcontextprotocol.server.McpServerFeatures;
-import io.modelcontextprotocol.spec.McpSchema;
 import io.ajcm.multidb.mcp.config.ConnectionConfig;
 import io.ajcm.multidb.mcp.db.DbConnectionProvider;
-import java.util.Map;
-import java.util.List;
+import io.modelcontextprotocol.server.McpServerFeatures;
+import io.modelcontextprotocol.spec.McpSchema;
 
 /**
  * Builder for MCP tools with auto-generated descriptions based on connection config.
@@ -14,6 +15,10 @@ import java.util.List;
  */
 public class ToolBuilder {
     private static final ObjectMapper mapper = new ObjectMapper();
+    
+    private ToolBuilder() {
+        throw new UnsupportedOperationException("Utility class");
+    }
     
     /**
      * Builds a health check tool for a specific database connection.

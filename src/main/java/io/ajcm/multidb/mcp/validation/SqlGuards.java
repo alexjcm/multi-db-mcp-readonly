@@ -22,7 +22,7 @@ public class SqlGuards {
 
     /**
      * Validates that the SQL is a safe SELECT statement.
-     * 
+     *
      * @param sql the SQL query
      * @return the trimmed and validated SQL
      */
@@ -50,8 +50,8 @@ public class SqlGuards {
 
     /**
      * Ensures the query references allowed schemas.
-     * 
-     * @param sql the SQL query
+     *
+     * @param sql            the SQL query
      * @param requiredSchema the schema constraints
      * @return the validated SQL
      */
@@ -60,7 +60,7 @@ public class SqlGuards {
         String upper = sql.toUpperCase(Locale.ROOT);
         String req = requiredSchema.trim();
         // Support comma-separated list of allowed schemas (e.g., "SCHEMAA,SCHEMAB")
-        String[] allowed = req.contains(",") ? req.split(",") : new String[] { req };
+        String[] allowed = req.contains(",") ? req.split(",") : new String[]{req};
         // If no qualified object (SCHEMA.OBJECT) appears in the SQL, allow it as referring to the primary/default schema
         // This enables unqualified table names for the main schema while still requiring qualification for other schemas
         Matcher qualified = QUALIFIED_OBJECT.matcher(upper);
@@ -80,8 +80,8 @@ public class SqlGuards {
 
     /**
      * Extracts existing limit or returns default.
-     * 
-     * @param sql the SQL query
+     *
+     * @param sql          the SQL query
      * @param defaultLimit the fallback limit
      * @return the limit to apply
      */
@@ -127,8 +127,8 @@ public class SqlGuards {
 
     /**
      * Enforces a maximum row limit on the query.
-     * 
-     * @param sql the SQL query
+     *
+     * @param sql   the SQL query
      * @param limit the maximum allowed rows
      * @return the modified SQL with limit enforced
      */
@@ -172,7 +172,7 @@ public class SqlGuards {
      * Replaces an existing limit clause with the exact requested limit, or appends it
      * when none exists.
      *
-     * @param sql the SQL query
+     * @param sql   the SQL query
      * @param limit the exact limit to apply
      * @return SQL with the exact limit applied
      */

@@ -1,24 +1,23 @@
 package io.ajcm.multidb.mcp;
 
-import io.modelcontextprotocol.json.McpJsonMapper;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import io.ajcm.multidb.mcp.config.ConnectionConfig;
+import io.ajcm.multidb.mcp.db.Db2ConnectionService;
+import io.ajcm.multidb.mcp.db.DbConnectionProvider;
+import io.ajcm.multidb.mcp.db.SingleStoreConnectionService;
+import io.ajcm.multidb.mcp.tool.SmartDefaultToolBuilder;
+import io.ajcm.multidb.mcp.util.ConfigLoader;
 import io.modelcontextprotocol.json.McpJsonDefaults;
+import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServer;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.server.transport.StdioServerTransportProvider;
 import io.modelcontextprotocol.spec.McpSchema.ServerCapabilities;
-import io.ajcm.multidb.mcp.config.ConnectionConfig;
-import io.ajcm.multidb.mcp.config.DbType;
-import io.ajcm.multidb.mcp.db.DbConnectionProvider;
-import io.ajcm.multidb.mcp.db.Db2ConnectionService;
-import io.ajcm.multidb.mcp.db.SingleStoreConnectionService;
-import io.ajcm.multidb.mcp.tool.SmartDefaultToolBuilder;
-import io.ajcm.multidb.mcp.util.ConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Entry point for the multi-database MCP server running over STDIO.
@@ -66,16 +65,14 @@ public class Main {
                 .build();
 
             // Register 4 generic tools with smart defaults
-            log.info("Registering 4 tools with smart defaults for {} connections", configs.size());
-
+            
             server.addTool(SmartDefaultToolBuilder.buildHealthTool(providers));
             server.addTool(SmartDefaultToolBuilder.buildListTablesTool(providers));
             server.addTool(SmartDefaultToolBuilder.buildDescribeTableTool(providers));
             server.addTool(SmartDefaultToolBuilder.buildExecuteSelectTool(providers));
 
             log.info("Multi-DB MCP server {} started with {} connections", serverVersion, configs.size());
-            log.info("Available tools: health, list_tables, describe_table, execute_select (smart defaults: Ecuador > DB2 > First available)");
-
+            
         } catch (Exception e) {
             log.error("Failed to start MCP server", e);
             System.exit(1);
