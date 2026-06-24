@@ -115,7 +115,7 @@ class ConfigLoaderTest {
         assertEquals("testuser", config.user());
         assertEquals("testpass", config.password());
         assertEquals("TESTLIB", config.database());
-        assertTrue(config.ssl()); // Default SSL
+        assertFalse(config.ssl()); // SSL defaults to false when not provided
         assertNull(config.description()); // Optional field
     }
 

@@ -10,6 +10,8 @@ import io.ajcm.multidb.mcp.db.DbConnectionProvider;
 import io.ajcm.multidb.mcp.db.SingleStoreConnectionService;
 import io.ajcm.multidb.mcp.tool.SmartDefaultToolBuilder;
 import io.ajcm.multidb.mcp.util.ConfigLoader;
+import io.ajcm.multidb.mcp.util.ConfigPathResolver;
+import io.ajcm.multidb.mcp.util.ConfigPathResolver.ResolvedConfigPath;
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServer;
@@ -40,8 +42,13 @@ public class Main {
             }
 
             // Load configuration with fail-fast validation
-            String configPath = System.getenv().getOrDefault("CONNECTIONS_FILE", "connections.json");
-            List<ConnectionConfig> configs = ConfigLoader.load(configPath);
+            ResolvedConfigPath resolvedConfigPath = ConfigPathResolver.resolve(args);
+            log.info(
+                "Loading configuration from {} ({})",
+                resolvedConfigPath.path(),
+                resolvedConfigPath.source()
+            );
+            List<ConnectionConfig> configs = ConfigLoader.load(resolvedConfigPath.path().toString());
 
             // Create connection providers
             Map<String, DbConnectionProvider> providers = new LinkedHashMap<>();
@@ -73,7 +80,12 @@ public class Main {
 
             log.info("Multi-DB MCP server {} started with {} connections", serverVersion, configs.size());
             
+        } catch (IllegalArgumentException e) {
+            System.err.println("ERROR: " + e.getMessage());
+            log.error("Failed to start MCP server: {}", e.getMessage(), e);
+            System.exit(1);
         } catch (Exception e) {
+            System.err.println("ERROR: Failed to start MCP server. " + e.getMessage());
             log.error("Failed to start MCP server", e);
             System.exit(1);
         }
