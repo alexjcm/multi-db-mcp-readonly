@@ -60,9 +60,22 @@ Configure connections via `connections.json`:
 ### Environment Variables
 
 ```bash
-# Path to connections file (default: connections.json)
+# Optional path to connections file
 CONNECTIONS_FILE=/path/to/connections.json
 ```
+
+### Configuration Resolution Order
+
+At startup, the server resolves the configuration file in this order:
+
+1. `--connections-file /absolute/path/to/connections.json`
+2. `CONNECTIONS_FILE`
+3. `connections.json` next to the running native binary or JAR
+4. `connections.json` in the current working directory
+
+If none of those locations exist, startup fails with an actionable error message.
+
+`query_timeout_sec` and `login_timeout_sec` are currently reserved for future use and are ignored by the server.
 
 ## Building and Running
 
@@ -78,7 +91,7 @@ CONNECTIONS_FILE=/path/to/connections.json
 ./gradlew clean shadowJar
 
 # Run
-java -jar build/libs/multi-db-mcp-readonly-*-all.jar
+java -jar build/libs/multi-db-mcp-readonly-*-all.jar --connections-file /path/to/connections.json
 ```
 
 ### Generate Metadata (First time only)
@@ -103,7 +116,7 @@ export PATH=$JAVA_HOME/bin:$PATH
 ./gradlew clean nativeCompile
 
 # Run (much faster startup)
-./build/native/nativeCompile/multi-db-mcp-readonly
+./build/native/nativeCompile/multi-db-mcp-readonly --connections-file /path/to/connections.json
 ```
 
 ## Usage with AI Clients
@@ -112,7 +125,7 @@ export PATH=$JAVA_HOME/bin:$PATH
 
 ```bash
 # Start server
-java -jar build/libs/multi-db-mcp-readonly-*-all.jar
+java -jar build/libs/multi-db-mcp-readonly-*-all.jar --connections-file /path/to/connections.json
 
 # In another terminal, use MCP Inspector
 npx @modelcontextprotocol/inspector
@@ -138,17 +151,14 @@ Add to your `claude_desktop_config.json`:
 
 ### Windsurf
 
-Edit your MCP configuration file:
+Edit `~/.codeium/windsurf/mcp_config.json`:
 
 ```json
 {
   "mcpServers": {
     "multi-db-mcp-readonly": {
       "command": "/path/to/multi-db-mcp-readonly/build/native/nativeCompile/multi-db-mcp-readonly",
-      "args": [],
-      "env": {
-        "CONNECTIONS_FILE": "/path/to/your/connections.json"
-      }
+      "args": ["--connections-file", "/path/to/your/connections.json"]
     }
   }
 }
@@ -236,17 +246,14 @@ Create a new Server (STDIO) and configure:
 
 ### Windsurf/Cursor
 
-Edit your MCP configuration file:
+For Windsurf, edit `~/.codeium/windsurf/mcp_config.json`. For Cursor, edit your MCP configuration file:
 
 ```json
 {
   "mcpServers": {
     "multi-db-mcp-readonly": {
       "command": "/path/to/multi-db-mcp-readonly/build/native/nativeCompile/multi-db-mcp-readonly",
-      "args": [],
-      "env": {
-        "CONNECTIONS_FILE": "/path/to/your/connections.json"
-      }
+      "args": ["--connections-file", "/path/to/your/connections.json"]
     }
   }
 }
@@ -299,4 +306,3 @@ Start Codex and run `/mcp` to see your active MCP servers. Test with:
 ## License
 
 MIT License
-
