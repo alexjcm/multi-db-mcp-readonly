@@ -2,25 +2,77 @@
 
 A read-only MCP (Model Context Protocol) server for querying multiple database types with unified access. Currently supports **DB2 for i (AS/400)** and **SingleStore** databases.
 
-## Features
+## Contents
 
-- **Multi-Database Support**: Connect to multiple database types simultaneously
-- **Health Check**: Verify database connectivity for each connection
-- **List Tables**: Discover available tables in specified schemas
-- **Describe Table**: Get detailed table structure including columns, primary keys, foreign keys, and database-specific metadata
-- **Execute Select**: Run read-only SELECT queries with SQL validation
-- **Extended Metadata**: Database-specific information (e.g., SingleStore shard/sort keys)
+- [Quick Start](#quick-start)
+- [Available Tools](#available-tools)
+  - [Response Format](#response-format)
+- [Configuration](#configuration)
+- [Building and Running](#building-and-running)
+- [Usage with AI Clients](#usage-with-ai-clients)
+- [Database-Specific Features](#database-specific-features)
+- [Security](#security)
+- [Troubleshooting](#troubleshooting)
+- [Development](#development)
+- [License](#license)
+
+## Quick Start
+
+```bash
+# 1. Copy the example config and fill in your real connection details
+cp connections.json.example connections.json
+
+# 2. Build the runnable JAR
+./gradlew clean shadowJar
+
+# 3. Run the server (picks up ./connections.json automatically)
+java -jar build/libs/multi-db-mcp-readonly-*-all.jar
+```
+
+See [Configuration](#configuration) for all connection fields, and [Usage with AI Clients](#usage-with-ai-clients) to wire this into Claude Desktop, Codex, Windsurf, or MCP Inspector.
 
 ## Available Tools
 
-For each database connection, the following tools are available:
+The server exposes 4 generic tools that work across every configured connection:
 
 | Tool | Description | Parameters |
 |------|-------------|------------|
-| `health_<connection_id>` | Check database connectivity | None |
-| `list_tables_<connection_id>` | List tables in schema | `schema` (optional) |
-| `describe_table_<connection_id>` | Get table structure | `schema`, `table` |
-| `execute_select_<connection_id>` | Run SELECT query | `query` |
+| `health` | Check database connectivity | `connection_id` (optional) |
+| `list_tables` | List tables in schema | `connection_id` (optional), `schema` (optional) |
+| `describe_table` | Get table structure | `connection_id` (optional), `schema`, `table` |
+| `execute_select` | Run read-only SELECT query | `connection_id` (optional), `query` |
+
+Each tool accepts an optional `connection_id` to target a specific entry from `connections.json`. When it's omitted, the server falls back to a smart default, in this order:
+
+1. The connection with id `ecuador_db2`, if configured
+2. Any DB2 for i connection whose id contains "ecuador"
+3. Any DB2 for i connection
+4. The first connection defined in `connections.json`
+
+### Response Format
+
+Every tool returns its payload as a JSON string inside the MCP `content` field. On success:
+
+```json
+{
+  "success": true,
+  "connection_id": "ecuador_db2",
+  "is_default": true,
+  "data": { "...": "tool-specific payload, e.g. rows for execute_select, columns for describe_table" }
+}
+```
+
+On failure (the MCP result also has `isError: true`):
+
+```json
+{
+  "success": false,
+  "error": "Connection not found: unknown_id",
+  "error_type": "CONNECTION_NOT_FOUND"
+}
+```
+
+`error_type` is one of `CONNECTION_NOT_FOUND`, `QUERY_ERROR`, or `HEALTH_CHECK_ERROR`. **Exception:** if a required parameter is missing entirely (e.g. `query` for `execute_select`, or `schema`/`table` for `describe_table`), the MCP SDK rejects the call before it reaches the server logic — you'll get a plain-text validation message instead of this JSON shape, still with `isError: true`.
 
 ## Configuration
 
@@ -57,6 +109,8 @@ Configure connections via `connections.json`:
 }
 ```
 
+> **Tip:** the smart-default rules in [Available Tools](#available-tools) look for an id of `ecuador_db2`, or any DB2 for i id containing "ecuador". Name a connection that way if you want it auto-selected when `connection_id` is omitted — otherwise the first connection in the list is used.
+
 ### Environment Variables
 
 ```bash
@@ -86,26 +140,28 @@ If none of those locations exist, startup fails with an actionable error message
 
 ### JVM Mode
 
-```bash
-# Build
-./gradlew clean shadowJar
+Same two commands as [Quick Start](#quick-start); pass `--connections-file /path/to/connections.json` explicitly if it isn't in the current directory:
 
-# Run
+```bash
+./gradlew clean shadowJar
 java -jar build/libs/multi-db-mcp-readonly-*-all.jar --connections-file /path/to/connections.json
 ```
 
-### Generate Metadata (First time only)
+### Generate Metadata
+
+Whenever the MCP SDK version or its dependencies change, regenerate the GraalVM reflection metadata under `src/main/resources/META-INF/native-image/`:
 
 ```bash
 # Set GraalVM environment
 export JAVA_HOME=$(path_to_graalvm)/Contents/Home
 ./gradlew clean shadowJar
-mkdir -p src/main/resources/META-INF/native-image
 
-# Test all tools in MCP Inspector to auto generate metadata
+# Point the tracing agent at the metadata directory
 java -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image \
-     -jar build/libs/multi-db-mcp-readonly-2.0.0-all.jar
+     -jar build/libs/multi-db-mcp-readonly-*-all.jar
 ```
+
+While that process is running, exercise **every tool against every configured database type** (DB2 for i and SingleStore) via MCP Inspector or another MCP client — the agent only records what it actually observes being used, so skipping an engine or a tool leaves its reflection needs uncaptured. When you're done, stop the process gracefully (e.g. `Ctrl+C`, or disconnect normally from the client) — killing it with `kill -9` can prevent the agent from flushing the final metadata to disk.
 
 ### Native Image Mode
 
@@ -121,19 +177,35 @@ export PATH=$JAVA_HOME/bin:$PATH
 
 ## Usage with AI Clients
 
+Every client below can run the server in **JVM mode** (`java -jar ...`) or **Native Image mode** (the compiled binary) — swap the command/arguments accordingly. Replace `/path/to/...` with the real paths on your machine.
+
 ### MCP Inspector
 
 ```bash
-# Start server
-java -jar build/libs/multi-db-mcp-readonly-*-all.jar --connections-file /path/to/connections.json
-
-# In another terminal, use MCP Inspector
+export CONNECTIONS_FILE=/path/to/your/connections.json
 npx @modelcontextprotocol/inspector
+```
+
+Create a new Server (STDIO) and configure:
+
+**JVM:**
+- Command: `java`
+- Arguments: `-jar /path/to/multi-db-mcp-readonly/build/libs/multi-db-mcp-readonly-*-all.jar`
+
+**Native Image:**
+- Command: `/path/to/multi-db-mcp-readonly/build/native/nativeCompile/multi-db-mcp-readonly`
+- Arguments: *(none)*
+
+Environment Variables (either mode, if not already exported in the shell that launches Inspector):
+```json
+{
+  "CONNECTIONS_FILE": "/path/to/your/connections.json"
+}
 ```
 
 ### Claude Desktop
 
-Add to your `claude_desktop_config.json`:
+Edit `claude_desktop_config.json`:
 
 ```json
 {
@@ -142,109 +214,16 @@ Add to your `claude_desktop_config.json`:
       "command": "java",
       "args": ["-jar", "/path/to/multi-db-mcp-readonly-*-all.jar"],
       "env": {
-        "CONNECTIONS_FILE": "/path/to/connections.json"
+        "CONNECTIONS_FILE": "/path/to/your/connections.json"
       }
     }
   }
 }
 ```
 
-### Windsurf
+For Native Image mode, set `command` to `/path/to/multi-db-mcp-readonly/build/native/nativeCompile/multi-db-mcp-readonly` and `args` to `[]`, keeping the same `env` block.
 
-Edit `~/.codeium/windsurf/mcp_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "multi-db-mcp-readonly": {
-      "command": "/path/to/multi-db-mcp-readonly/build/native/nativeCompile/multi-db-mcp-readonly",
-      "args": ["--connections-file", "/path/to/your/connections.json"]
-    }
-  }
-}
-```
-
-## Database-Specific Features
-
-### DB2 for i (AS/400)
-
-- **Schema Support**: QSYS2 system catalog queries
-- **Connection Pooling**: JT400 driver integration
-- **SSL Support**: AS/400 SSL connections
-
-### SingleStore
-
-- **Extended Metadata**: Shard key and sort key information
-- **DDL Parsing**: Automatic extraction of performance-critical keys
-- **Information Schema**: Standard MySQL-compatible metadata queries
-
-## Security
-
-- **Read-only enforcement**: All SQL queries are validated to allow only SELECT statements
-- **Connection security**: Supports SSL/TLS connections for both database types
-- **Input validation**: All tool inputs are validated against JSON schemas
-- **Fail-fast startup**: Server exits with error code 1 if configuration is invalid
-- **SQL Injection Protection**: Parameterized queries and input sanitization
-
-## Development
-
-### How to Add a New Database Type
-
-1. **Add enum value** to `DbType.java`
-2. **Implement `DbConnectionProvider`** interface
-3. **Add dependency** to `build.gradle`
-4. **Update `Main.java`** switch statement
-5. **Add tests** for the new implementation
-
-See `SingleStoreConnectionService.java` as a reference implementation.
-
-### Testing
-
-```bash
-# Run tests
-./gradlew test
-```
-
-### Dependencies
-
-- **MCP SDK**: `io.modelcontextprotocol.sdk:mcp-*`
-- **DB2 Driver**: `net.sf.jt400:jt400:21.0.6`
-- **SingleStore Driver**: `com.singlestore:singlestore-jdbc-client:1.2.11`
-
-## AI Client Configuration
-
-### MCP Inspector (Testing)
-
-#### Run
-```bash
-export CONNECTIONS_FILE=/path/to/your/connections.json
-npx @modelcontextprotocol/inspector
-```
-
-#### Config
-Create a new Server (STDIO) and configure:
-
-**GraalVM Native Image:**
-- Command: `/path/to/multi-db-mcp-readonly/build/native/nativeCompile/multi-db-mcp-readonly`
-- Arguments: `[]`
-- Environment Variables:
-```json
-{
-  "CONNECTIONS_FILE": "/path/to/your/connections.json"
-}
-```
-
-**Java JVM:**
-- Command: `java`
-- Arguments: `["-jar", "/path/to/multi-db-mcp-readonly/build/libs/multi-db-mcp-readonly-2.0.0-all.jar"]`
-- Environment Variables:
-```json
-{
-  "CONNECTIONS_FILE": "/path/to/your/connections.json"
-}
-```
-
-### Windsurf/Cursor
+### Windsurf / Cursor
 
 For Windsurf, edit `~/.codeium/windsurf/mcp_config.json`. For Cursor, edit your MCP configuration file:
 
@@ -258,26 +237,6 @@ For Windsurf, edit `~/.codeium/windsurf/mcp_config.json`. For Cursor, edit your 
   }
 }
 ```
-
-### Claude Desktop
-
-Edit `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "multi-db-mcp-readonly": {
-      "command": "/path/to/multi-db-mcp-readonly/build/native/nativeCompile/multi-db-mcp-readonly",
-      "args": [],
-      "env": {
-        "CONNECTIONS_FILE": "/path/to/your/connections.json"
-      }
-    }
-  }
-}
-```
-
-**Important:** Replace `/path/to/your/connections.json` with the actual path to your database configuration file.
 
 ### Codex CLI
 
@@ -302,6 +261,64 @@ Start Codex and run `/mcp` to see your active MCP servers. Test with:
 - "Check the health of all database connections"
 - "List tables in the Ecuador database"
 - "Describe the CLIENTES table"
+
+## Database-Specific Features
+
+### DB2 for i (AS/400)
+
+- **Schema Support**: QSYS2 system catalog queries
+- **Connection Pooling**: JT400 driver integration
+- **SSL Support**: AS/400 SSL connections
+
+### SingleStore
+
+- **Extended Metadata**: Shard key and sort key information
+- **DDL Parsing**: Automatic extraction of performance-critical keys
+- **Information Schema**: Standard MySQL-compatible metadata queries
+
+## Security
+
+- **Read-only enforcement**: All SQL queries are validated to allow only SELECT statements
+- **Connection security**: Supports SSL/TLS connections for both database types
+- **Input validation**: All tool inputs are validated against JSON schemas
+- **Fail-fast startup**: Server exits with error code 1 if configuration is invalid
+- **SQL Injection Protection**: Parameterized queries and input sanitization
+
+## Troubleshooting
+
+**`Error: A JNI error has occurred ... UnsupportedClassVersionError`**
+The `java` on your `PATH` is older than the Java 25 this project targets. Point your client (or `JAVA_HOME`) at a Java 25+ runtime explicitly — on macOS, list installed JDKs with `/usr/libexec/java_home -V` and use the full path to the `java` binary from a matching one.
+
+**`CONNECTIONS_FILE not set and no default configuration file was found`**
+None of the 4 locations in [Configuration Resolution Order](#configuration-resolution-order) had a valid file. Pass `--connections-file /absolute/path/to/connections.json`, export `CONNECTIONS_FILE`, or place a `connections.json` next to the JAR/binary or in your current working directory.
+
+**`describe_table` / `execute_select` fail with a `SQL0xxx` error from DB2 for i**
+These come straight from the AS/400 SQL engine (e.g. `SQL0206` = column not found, `SQL0204` = object not found) — they usually mean the `schema`/`table` name is wrong, or the caller lacks privileges on that object. Run `list_tables` first to confirm the exact name and library.
+
+## Development
+
+### How to Add a New Database Type
+
+1. **Add enum value** to `DbType.java`
+2. **Implement `DbConnectionProvider`** interface
+3. **Add dependency** to `build.gradle`
+4. **Update `Main.java`** switch statement
+5. **Add tests** for the new implementation
+
+See `SingleStoreConnectionService.java` as a reference implementation.
+
+### Testing
+
+```bash
+# Run tests
+./gradlew test
+```
+
+### Dependencies
+
+- **MCP SDK**: `io.modelcontextprotocol.sdk:mcp-core` + `io.modelcontextprotocol.sdk:mcp-json-jackson2` (versions managed via `mcp-bom`)
+- **DB2 Driver**: `net.sf.jt400:jt400:21.0.6`
+- **SingleStore Driver**: `com.singlestore:singlestore-jdbc-client:1.2.11`
 
 ## License
 
