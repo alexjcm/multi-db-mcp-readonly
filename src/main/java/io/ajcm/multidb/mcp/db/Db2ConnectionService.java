@@ -209,7 +209,7 @@ public class Db2ConnectionService implements DbConnectionProvider {
         
         String sql = """
             SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH,
-                   IS_NULLABLE, COLUMN_DEFAULT, COLUMN_KEY
+                   IS_NULLABLE, COLUMN_DEFAULT
             FROM QSYS2.SYSCOLUMNS
             WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?
             ORDER BY ORDINAL_POSITION
@@ -227,19 +227,18 @@ public class Db2ConnectionService implements DbConnectionProvider {
                     String dataType = rs.getString("DATA_TYPE");
                     int maxLength = rs.getInt("CHARACTER_MAXIMUM_LENGTH");
                     String isNullable = rs.getString("IS_NULLABLE");
-                    String columnKey = rs.getString("COLUMN_KEY");
-                    
+
                     // Build full type string
                     String fullType = dataType;
                     if (maxLength > 0 && dataType.contains("CHAR")) {
                         fullType += "(" + maxLength + ")";
                     }
-                    
+
                     columns.add(new TableMetadata.ColumnInfo(
                         columnName,
                         fullType,
                         "YES".equalsIgnoreCase(isNullable),
-                        columnKey != null ? columnKey : ""
+                        ""
                     ));
                 }
             }
@@ -255,10 +254,14 @@ public class Db2ConnectionService implements DbConnectionProvider {
         List<String> pkColumns = new ArrayList<>();
         
         String sql = """
-            SELECT COLUMN_NAME
-            FROM QSYS2.SYSPKEY
-            WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?
-            ORDER BY ORDINAL_POSITION
+            SELECT K.COLUMN_NAME
+            FROM QSYS2.SYSCST C
+            JOIN QSYS2.SYSKEYCST K
+                ON C.CONSTRAINT_SCHEMA = K.CONSTRAINT_SCHEMA
+               AND C.CONSTRAINT_NAME = K.CONSTRAINT_NAME
+            WHERE C.CONSTRAINT_SCHEMA = ? AND C.TABLE_NAME = ?
+              AND C.CONSTRAINT_TYPE = 'PRIMARY KEY'
+            ORDER BY K.ORDINAL_POSITION
             """;
         
         try (Connection conn = getConnection();
@@ -283,10 +286,27 @@ public class Db2ConnectionService implements DbConnectionProvider {
         List<TableMetadata.ForeignKeyInfo> foreignKeys = new ArrayList<>();
         
         String sql = """
-            SELECT CONSTRAINT_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
-            FROM QSYS2.SYSRELS
-            WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?
-            ORDER BY CONSTRAINT_NAME, ORDINAL_POSITION
+            SELECT C.CONSTRAINT_NAME AS CONSTRAINT_NAME,
+                   K.COLUMN_NAME AS COLUMN_NAME,
+                   P.TABLE_NAME AS REFERENCED_TABLE_NAME,
+                   PK.COLUMN_NAME AS REFERENCED_COLUMN_NAME
+            FROM QSYS2.SYSCST C
+            JOIN QSYS2.SYSKEYCST K
+                ON C.CONSTRAINT_SCHEMA = K.CONSTRAINT_SCHEMA
+               AND C.CONSTRAINT_NAME = K.CONSTRAINT_NAME
+            JOIN QSYS2.SYSREFCST R
+                ON C.CONSTRAINT_SCHEMA = R.CONSTRAINT_SCHEMA
+               AND C.CONSTRAINT_NAME = R.CONSTRAINT_NAME
+            JOIN QSYS2.SYSCST P
+                ON R.UNIQUE_CONSTRAINT_SCHEMA = P.CONSTRAINT_SCHEMA
+               AND R.UNIQUE_CONSTRAINT_NAME = P.CONSTRAINT_NAME
+            JOIN QSYS2.SYSKEYCST PK
+                ON P.CONSTRAINT_SCHEMA = PK.CONSTRAINT_SCHEMA
+               AND P.CONSTRAINT_NAME = PK.CONSTRAINT_NAME
+               AND PK.ORDINAL_POSITION = K.ORDINAL_POSITION
+            WHERE C.CONSTRAINT_SCHEMA = ? AND C.TABLE_NAME = ?
+              AND C.CONSTRAINT_TYPE = 'FOREIGN KEY'
+            ORDER BY C.CONSTRAINT_NAME, K.ORDINAL_POSITION
             """;
         
         try (Connection conn = getConnection();

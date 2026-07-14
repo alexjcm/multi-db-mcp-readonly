@@ -93,7 +93,7 @@ class SmartDefaultToolBuilderTest {
                 Map.entry("ecuador_db2", ecuadorDb2)
         ));
 
-        McpSchema.CallToolResult result = tool.callHandler().apply(null, new McpSchema.CallToolRequest("health", Map.of()));
+        McpSchema.CallToolResult result = tool.callHandler().apply(null, new McpSchema.CallToolRequest("health", Map.of(), null));
         String payload = ((McpSchema.TextContent) result.content().getFirst()).text();
 
         assertFalse(Boolean.TRUE.equals(result.isError()));
@@ -109,7 +109,7 @@ class SmartDefaultToolBuilderTest {
         ));
 
         McpSchema.CallToolResult result = tool.callHandler()
-                .apply(null, new McpSchema.CallToolRequest("health", Map.of("connection_id", "missing")));
+                .apply(null, new McpSchema.CallToolRequest("health", Map.of("connection_id", "missing"), null));
         String payload = ((McpSchema.TextContent) result.content().getFirst()).text();
 
         assertTrue(Boolean.TRUE.equals(result.isError()));
@@ -123,9 +123,15 @@ class SmartDefaultToolBuilderTest {
                 Map.entry("ecuador_db2", ecuadorDb2)
         ));
 
-        assertTrue(tool.tool().inputSchema().required().isEmpty());
-        assertTrue(tool.tool().inputSchema().properties().containsKey("connection_id"));
-        assertTrue(tool.tool().inputSchema().properties().containsKey("schema"));
+        Map<String, Object> inputSchema = tool.tool().inputSchema();
+        @SuppressWarnings("unchecked")
+        List<String> required = (List<String>) inputSchema.get("required");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> properties = (Map<String, Object>) inputSchema.get("properties");
+
+        assertTrue(required.isEmpty());
+        assertTrue(properties.containsKey("connection_id"));
+        assertTrue(properties.containsKey("schema"));
     }
 
     private Map<String, DbConnectionProvider> providers(Map.Entry<String, DbConnectionProvider>... entries) {

@@ -1,5 +1,6 @@
 package io.ajcm.multidb.mcp.tool;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,7 +25,20 @@ public class SmartDefaultToolBuilder {
     private SmartDefaultToolBuilder() {
         throw new UnsupportedOperationException("Utility class");
     }
-    
+
+    private static Map<String, Object> stringProperty() {
+        return Map.of("type", "string");
+    }
+
+    private static Map<String, Object> objectSchema(Map<String, Object> properties, List<String> required) {
+        Map<String, Object> schema = new LinkedHashMap<>();
+        schema.put("type", "object");
+        schema.put("properties", properties);
+        schema.put("required", required);
+        schema.put("additionalProperties", false);
+        return schema;
+    }
+
     /**
      * Gets the default connection provider based on smart rules:
      * 1. DB2 Ecuador (ecuador_db2)
@@ -146,34 +160,23 @@ public class SmartDefaultToolBuilder {
             String.join(", ", providers.keySet())
         );
         
-        McpSchema.JsonSchema inputSchema = new McpSchema.JsonSchema(
-            "object", 
-            Map.of(
-                "connection_id", new McpSchema.JsonSchema("string", null, null, false, null, null)
-            ), 
-            List.of(), 
-            false, 
-            null, 
-            null
+        Map<String, Object> inputSchema = objectSchema(
+            Map.of("connection_id", stringProperty()),
+            List.of()
         );
-        
-        McpSchema.Tool tool = new McpSchema.Tool(
-            toolName,
-            title,
-            description,
-            inputSchema,
-            null,
-            null,
-            null
-        );
-        
+
+        McpSchema.Tool tool = McpSchema.Tool.builder(toolName, inputSchema)
+            .title(title)
+            .description(description)
+            .build();
+
         return new McpServerFeatures.SyncToolSpecification(
             tool,
             (exchange, request) -> {
                 try {
                     DbConnectionProvider provider = getProvider(providers, request.arguments());
                     String connectionId = getConnectionId(providers, request.arguments(), provider);
-                    
+
                     if (provider == null) {
                         ObjectNode errorNode = mapper.createObjectNode();
                         errorNode.put("success", false);
@@ -182,11 +185,11 @@ public class SmartDefaultToolBuilder {
                         errorNode.put("error_type", "CONNECTION_NOT_FOUND");
                         String error = errorNode.toString();
                         return McpSchema.CallToolResult.builder()
-                                .content(List.of(new McpSchema.TextContent(error)))
+                                .content(List.of(McpSchema.TextContent.builder(error).build()))
                                 .isError(true)
                                 .build();
                     }
-                    
+
                     boolean isHealthy = provider.healthCheck();
                     ConnectionConfig config = provider.getConfig();
                     boolean isDefault = provider == getDefaultProvider(providers);
@@ -224,7 +227,7 @@ public class SmartDefaultToolBuilder {
                     }
                     
                     return McpSchema.CallToolResult.builder()
-                            .content(List.of(new McpSchema.TextContent(result.toString())))
+                            .content(List.of(McpSchema.TextContent.builder(result.toString()).build()))
                             .isError(false)
                             .build();
                 } catch (Exception e) {
@@ -234,7 +237,7 @@ public class SmartDefaultToolBuilder {
                             .put("error_type", "HEALTH_CHECK_ERROR")
                             .toString();
                     return McpSchema.CallToolResult.builder()
-                            .content(List.of(new McpSchema.TextContent(error)))
+                            .content(List.of(McpSchema.TextContent.builder(error).build()))
                             .isError(true)
                             .build();
                 }
@@ -261,35 +264,26 @@ public class SmartDefaultToolBuilder {
             String.join(", ", providers.keySet())
         );
         
-        McpSchema.JsonSchema inputSchema = new McpSchema.JsonSchema(
-            "object", 
+        Map<String, Object> inputSchema = objectSchema(
             Map.of(
-                "connection_id", new McpSchema.JsonSchema("string", null, null, false, null, null),
-                "schema", new McpSchema.JsonSchema("string", null, null, false, null, null)
-            ), 
-            List.of(), 
-            false, 
-            null, 
-            null
+                "connection_id", stringProperty(),
+                "schema", stringProperty()
+            ),
+            List.of()
         );
-        
-        McpSchema.Tool tool = new McpSchema.Tool(
-            toolName,
-            title,
-            description,
-            inputSchema,
-            null,
-            null,
-            null
-        );
-        
+
+        McpSchema.Tool tool = McpSchema.Tool.builder(toolName, inputSchema)
+            .title(title)
+            .description(description)
+            .build();
+
         return new McpServerFeatures.SyncToolSpecification(
             tool,
             (exchange, request) -> {
                 try {
                     DbConnectionProvider provider = getProvider(providers, request.arguments());
                     String connectionId = getConnectionId(providers, request.arguments(), provider);
-                    String schema = request.arguments().containsKey("schema") ? 
+                    String schema = request.arguments().containsKey("schema") ?
                             (String) request.arguments().get("schema") : null;
                     
                     if (provider == null) {
@@ -300,7 +294,7 @@ public class SmartDefaultToolBuilder {
                         errorNode.put("error_type", "CONNECTION_NOT_FOUND");
                         String error = errorNode.toString();
                         return McpSchema.CallToolResult.builder()
-                                .content(List.of(new McpSchema.TextContent(error)))
+                                .content(List.of(McpSchema.TextContent.builder(error).build()))
                                 .isError(true)
                                 .build();
                     }
@@ -316,7 +310,7 @@ public class SmartDefaultToolBuilder {
                             .toString();
                     
                     return McpSchema.CallToolResult.builder()
-                            .content(List.of(new McpSchema.TextContent(result)))
+                            .content(List.of(McpSchema.TextContent.builder(result).build()))
                             .isError(false)
                             .build();
                 } catch (Exception e) {
@@ -326,7 +320,7 @@ public class SmartDefaultToolBuilder {
                             .put("error_type", "QUERY_ERROR")
                             .toString();
                     return McpSchema.CallToolResult.builder()
-                            .content(List.of(new McpSchema.TextContent(error)))
+                            .content(List.of(McpSchema.TextContent.builder(error).build()))
                             .isError(true)
                             .build();
                 }
@@ -353,29 +347,20 @@ public class SmartDefaultToolBuilder {
             String.join(", ", providers.keySet())
         );
         
-        McpSchema.JsonSchema inputSchema = new McpSchema.JsonSchema(
-            "object", 
+        Map<String, Object> inputSchema = objectSchema(
             Map.of(
-                "connection_id", new McpSchema.JsonSchema("string", null, null, false, null, null),
-                "schema", new McpSchema.JsonSchema("string", null, null, false, null, null),
-                "table", new McpSchema.JsonSchema("string", null, null, false, null, null)
-            ), 
-            List.of("schema", "table"), 
-            false, 
-            null, 
-            null
+                "connection_id", stringProperty(),
+                "schema", stringProperty(),
+                "table", stringProperty()
+            ),
+            List.of("schema", "table")
         );
-        
-        McpSchema.Tool tool = new McpSchema.Tool(
-            toolName,
-            title,
-            description,
-            inputSchema,
-            null,
-            null,
-            null
-        );
-        
+
+        McpSchema.Tool tool = McpSchema.Tool.builder(toolName, inputSchema)
+            .title(title)
+            .description(description)
+            .build();
+
         return new McpServerFeatures.SyncToolSpecification(
             tool,
             (exchange, request) -> {
@@ -393,11 +378,11 @@ public class SmartDefaultToolBuilder {
                         errorNode.put("error_type", "CONNECTION_NOT_FOUND");
                         String error = errorNode.toString();
                         return McpSchema.CallToolResult.builder()
-                                .content(List.of(new McpSchema.TextContent(error)))
+                                .content(List.of(McpSchema.TextContent.builder(error).build()))
                                 .isError(true)
                                 .build();
                     }
-                    
+
                     var metadata = provider.describeTable(schema, table);
                     boolean isDefault = provider == getDefaultProvider(providers);
                     
@@ -409,7 +394,7 @@ public class SmartDefaultToolBuilder {
                             .toString();
                     
                     return McpSchema.CallToolResult.builder()
-                            .content(List.of(new McpSchema.TextContent(result)))
+                            .content(List.of(McpSchema.TextContent.builder(result).build()))
                             .isError(false)
                             .build();
                 } catch (Exception e) {
@@ -419,7 +404,7 @@ public class SmartDefaultToolBuilder {
                             .put("error_type", "QUERY_ERROR")
                             .toString();
                     return McpSchema.CallToolResult.builder()
-                            .content(List.of(new McpSchema.TextContent(error)))
+                            .content(List.of(McpSchema.TextContent.builder(error).build()))
                             .isError(true)
                             .build();
                 }
@@ -446,28 +431,19 @@ public class SmartDefaultToolBuilder {
             String.join(", ", providers.keySet())
         );
         
-        McpSchema.JsonSchema inputSchema = new McpSchema.JsonSchema(
-            "object", 
+        Map<String, Object> inputSchema = objectSchema(
             Map.of(
-                "connection_id", new McpSchema.JsonSchema("string", null, null, false, null, null),
-                "query", new McpSchema.JsonSchema("string", null, null, false, null, null)
-            ), 
-            List.of("query"), 
-            false, 
-            null, 
-            null
+                "connection_id", stringProperty(),
+                "query", stringProperty()
+            ),
+            List.of("query")
         );
-        
-        McpSchema.Tool tool = new McpSchema.Tool(
-            toolName,
-            title,
-            description,
-            inputSchema,
-            null,
-            null,
-            null
-        );
-        
+
+        McpSchema.Tool tool = McpSchema.Tool.builder(toolName, inputSchema)
+            .title(title)
+            .description(description)
+            .build();
+
         return new McpServerFeatures.SyncToolSpecification(
             tool,
             (exchange, request) -> {
@@ -484,11 +460,11 @@ public class SmartDefaultToolBuilder {
                         errorNode.put("error_type", "CONNECTION_NOT_FOUND");
                         String error = errorNode.toString();
                         return McpSchema.CallToolResult.builder()
-                                .content(List.of(new McpSchema.TextContent(error)))
+                                .content(List.of(McpSchema.TextContent.builder(error).build()))
                                 .isError(true)
                                 .build();
                     }
-                    
+
                     String result = provider.executeSelect(query);
                     ConnectionConfig config = provider.getConfig();
                     boolean isDefault = provider == getDefaultProvider(providers);
@@ -503,7 +479,7 @@ public class SmartDefaultToolBuilder {
                             .toString();
                     
                     return McpSchema.CallToolResult.builder()
-                            .content(List.of(new McpSchema.TextContent(enhancedResult)))
+                            .content(List.of(McpSchema.TextContent.builder(enhancedResult).build()))
                             .isError(false)
                             .build();
                 } catch (Exception e) {
@@ -513,7 +489,7 @@ public class SmartDefaultToolBuilder {
                             .put("error_type", "QUERY_ERROR")
                             .toString();
                     return McpSchema.CallToolResult.builder()
-                            .content(List.of(new McpSchema.TextContent(error)))
+                            .content(List.of(McpSchema.TextContent.builder(error).build()))
                             .isError(true)
                             .build();
                 }

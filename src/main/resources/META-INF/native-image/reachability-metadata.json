@@ -1,10 +1,22 @@
 {
   "reflection": [
     {
+      "type": "char[]"
+    },
+    {
       "type": "com.ethlo.time.ITU"
     },
     {
       "type": "com.fasterxml.jackson.databind.ext.Java7SupportImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.ser.std.SqlDateSerializer",
       "methods": [
         {
           "name": "<init>",
@@ -22,34 +34,7 @@
       ]
     },
     {
-      "type": "com.ibm.as400.access.AS400JDBCConnectionImpl",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.ibm.as400.access.AS400JDBCConnectionRedirect",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
       "type": "com.ibm.as400.access.AS400JDBCDriver"
-    },
-    {
-      "type": "com.ibm.as400.access.ConvTable1200",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
     },
     {
       "type": "com.ibm.as400.access.ConvTable13488",
@@ -71,15 +56,6 @@
     },
     {
       "type": "com.ibm.as400.access.ConvTable37",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.ibm.as400.access.JDConnectionProxy",
       "methods": [
         {
           "name": "<init>",
@@ -494,16 +470,88 @@
       "type": "float[]"
     },
     {
-      "type": "io.ajcm.db2.ibmi.mcp.Main",
-      "jniAccessible": true,
+      "type": "io.ajcm.multidb.mcp.config.DbType"
+    },
+    {
+      "type": "io.ajcm.multidb.mcp.db.TableMetadata",
       "methods": [
         {
-          "name": "main",
-          "parameterTypes": [
-            "java.lang.String[]"
-          ]
+          "name": "columns",
+          "parameterTypes": []
+        },
+        {
+          "name": "dbType",
+          "parameterTypes": []
+        },
+        {
+          "name": "extended",
+          "parameterTypes": []
+        },
+        {
+          "name": "foreignKeys",
+          "parameterTypes": []
+        },
+        {
+          "name": "primaryKey",
+          "parameterTypes": []
+        },
+        {
+          "name": "schema",
+          "parameterTypes": []
+        },
+        {
+          "name": "table",
+          "parameterTypes": []
         }
       ]
+    },
+    {
+      "type": "io.ajcm.multidb.mcp.db.TableMetadata$ColumnInfo",
+      "methods": [
+        {
+          "name": "key",
+          "parameterTypes": []
+        },
+        {
+          "name": "name",
+          "parameterTypes": []
+        },
+        {
+          "name": "nullable",
+          "parameterTypes": []
+        },
+        {
+          "name": "type",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.ajcm.multidb.mcp.db.TableMetadata$ColumnInfo[]"
+    },
+    {
+      "type": "io.ajcm.multidb.mcp.db.TableMetadata$ForeignKeyInfo",
+      "methods": [
+        {
+          "name": "columns",
+          "parameterTypes": []
+        },
+        {
+          "name": "name",
+          "parameterTypes": []
+        },
+        {
+          "name": "referencedColumns",
+          "parameterTypes": []
+        },
+        {
+          "name": "referencedTable",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.ajcm.multidb.mcp.db.TableMetadata$ForeignKeyInfo[]"
     },
     {
       "type": "io.micrometer.context.ContextRegistry"
@@ -518,15 +566,13 @@
       "type": "io.modelcontextprotocol.spec.McpSchema$Annotated"
     },
     {
-      "type": "io.modelcontextprotocol.spec.McpSchema$Annotations",
-      "allDeclaredFields": true
+      "type": "io.modelcontextprotocol.spec.McpSchema$Annotations"
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$CallToolRequest",
-      "allDeclaredFields": true,
       "methods": [
         {
-          "name": "<init>",
+          "name": "fromJson",
           "parameterTypes": [
             "java.lang.String",
             "java.util.Map",
@@ -537,7 +583,6 @@
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$CallToolResult",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "content",
@@ -559,7 +604,6 @@
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$ClientCapabilities",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "<init>",
@@ -574,7 +618,6 @@
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$ClientCapabilities$Elicitation",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "<init>",
@@ -587,7 +630,6 @@
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$ClientCapabilities$Elicitation$Form",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "<init>",
@@ -597,7 +639,6 @@
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$ClientCapabilities$Elicitation$Url",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "<init>",
@@ -607,7 +648,6 @@
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$ClientCapabilities$RootCapabilities",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "<init>",
@@ -619,7 +659,6 @@
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$ClientCapabilities$Sampling",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "<init>",
@@ -631,19 +670,32 @@
       "type": "io.modelcontextprotocol.spec.McpSchema$Content"
     },
     {
+      "type": "io.modelcontextprotocol.spec.McpSchema$Icon"
+    },
+    {
       "type": "io.modelcontextprotocol.spec.McpSchema$Identifier"
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$Implementation",
-      "allDeclaredFields": true,
       "methods": [
         {
-          "name": "<init>",
+          "name": "description",
+          "parameterTypes": []
+        },
+        {
+          "name": "fromJson",
           "parameterTypes": [
             "java.lang.String",
             "java.lang.String",
+            "java.lang.String",
+            "java.lang.String",
+            "java.util.List",
             "java.lang.String"
           ]
+        },
+        {
+          "name": "icons",
+          "parameterTypes": []
         },
         {
           "name": "name",
@@ -656,15 +708,18 @@
         {
           "name": "version",
           "parameterTypes": []
+        },
+        {
+          "name": "websiteUrl",
+          "parameterTypes": []
         }
       ]
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$InitializeRequest",
-      "allDeclaredFields": true,
       "methods": [
         {
-          "name": "<init>",
+          "name": "fromJson",
           "parameterTypes": [
             "java.lang.String",
             "io.modelcontextprotocol.spec.McpSchema$ClientCapabilities",
@@ -676,7 +731,6 @@
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$InitializeResult",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "capabilities",
@@ -705,7 +759,6 @@
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$JSONRPCNotification",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "<init>",
@@ -731,7 +784,6 @@
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$JSONRPCRequest",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "<init>",
@@ -746,7 +798,6 @@
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$JSONRPCResponse",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "error",
@@ -767,53 +818,10 @@
       ]
     },
     {
-      "type": "io.modelcontextprotocol.spec.McpSchema$JSONRPCResponse$JSONRPCError",
-      "allDeclaredFields": true
-    },
-    {
-      "type": "io.modelcontextprotocol.spec.McpSchema$JsonSchema",
-      "allDeclaredFields": true,
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "java.lang.String",
-            "java.util.Map",
-            "java.util.List",
-            "java.lang.Boolean",
-            "java.util.Map",
-            "java.util.Map"
-          ]
-        },
-        {
-          "name": "additionalProperties",
-          "parameterTypes": []
-        },
-        {
-          "name": "definitions",
-          "parameterTypes": []
-        },
-        {
-          "name": "defs",
-          "parameterTypes": []
-        },
-        {
-          "name": "properties",
-          "parameterTypes": []
-        },
-        {
-          "name": "required",
-          "parameterTypes": []
-        },
-        {
-          "name": "type",
-          "parameterTypes": []
-        }
-      ]
+      "type": "io.modelcontextprotocol.spec.McpSchema$JSONRPCResponse$JSONRPCError"
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$ListToolsResult",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "meta",
@@ -831,61 +839,17 @@
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$LoggingLevel",
-      "allDeclaredFields": true
-    },
-    {
-      "type": "io.modelcontextprotocol.spec.McpSchema$LoggingMessageNotification",
-      "allDeclaredFields": true,
       "methods": [
         {
-          "name": "data",
-          "parameterTypes": []
-        },
-        {
-          "name": "level",
-          "parameterTypes": []
-        },
-        {
-          "name": "logger",
-          "parameterTypes": []
-        },
-        {
-          "name": "meta",
-          "parameterTypes": []
+          "name": "fromValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         }
       ]
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$Meta"
-    },
-    {
-      "type": "io.modelcontextprotocol.spec.McpSchema$Notification"
-    },
-    {
-      "type": "io.modelcontextprotocol.spec.McpSchema$ProgressNotification",
-      "allDeclaredFields": true,
-      "methods": [
-        {
-          "name": "message",
-          "parameterTypes": []
-        },
-        {
-          "name": "meta",
-          "parameterTypes": []
-        },
-        {
-          "name": "progress",
-          "parameterTypes": []
-        },
-        {
-          "name": "progressToken",
-          "parameterTypes": []
-        },
-        {
-          "name": "total",
-          "parameterTypes": []
-        }
-      ]
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$Request"
@@ -895,7 +859,6 @@
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$ServerCapabilities",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "completions",
@@ -924,24 +887,19 @@
       ]
     },
     {
-      "type": "io.modelcontextprotocol.spec.McpSchema$ServerCapabilities$CompletionCapabilities",
-      "allDeclaredFields": true
+      "type": "io.modelcontextprotocol.spec.McpSchema$ServerCapabilities$CompletionCapabilities"
     },
     {
-      "type": "io.modelcontextprotocol.spec.McpSchema$ServerCapabilities$LoggingCapabilities",
-      "allDeclaredFields": true
+      "type": "io.modelcontextprotocol.spec.McpSchema$ServerCapabilities$LoggingCapabilities"
     },
     {
-      "type": "io.modelcontextprotocol.spec.McpSchema$ServerCapabilities$PromptCapabilities",
-      "allDeclaredFields": true
+      "type": "io.modelcontextprotocol.spec.McpSchema$ServerCapabilities$PromptCapabilities"
     },
     {
-      "type": "io.modelcontextprotocol.spec.McpSchema$ServerCapabilities$ResourceCapabilities",
-      "allDeclaredFields": true
+      "type": "io.modelcontextprotocol.spec.McpSchema$ServerCapabilities$ResourceCapabilities"
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$ServerCapabilities$ToolCapabilities",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "listChanged",
@@ -951,10 +909,9 @@
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$SetLevelRequest",
-      "allDeclaredFields": true,
       "methods": [
         {
-          "name": "<init>",
+          "name": "fromJson",
           "parameterTypes": [
             "io.modelcontextprotocol.spec.McpSchema$LoggingLevel"
           ]
@@ -963,7 +920,6 @@
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$TextContent",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "annotations",
@@ -981,7 +937,6 @@
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$Tool",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "annotations",
@@ -989,6 +944,10 @@
         },
         {
           "name": "description",
+          "parameterTypes": []
+        },
+        {
+          "name": "icons",
           "parameterTypes": []
         },
         {
@@ -1014,45 +973,7 @@
       ]
     },
     {
-      "type": "io.modelcontextprotocol.spec.McpSchema$ToolAnnotations",
-      "allDeclaredFields": true,
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "java.lang.String",
-            "java.lang.Boolean",
-            "java.lang.Boolean",
-            "java.lang.Boolean",
-            "java.lang.Boolean",
-            "java.lang.Boolean"
-          ]
-        },
-        {
-          "name": "destructiveHint",
-          "parameterTypes": []
-        },
-        {
-          "name": "idempotentHint",
-          "parameterTypes": []
-        },
-        {
-          "name": "openWorldHint",
-          "parameterTypes": []
-        },
-        {
-          "name": "readOnlyHint",
-          "parameterTypes": []
-        },
-        {
-          "name": "returnDirect",
-          "parameterTypes": []
-        },
-        {
-          "name": "title",
-          "parameterTypes": []
-        }
-      ]
+      "type": "io.modelcontextprotocol.spec.McpSchema$ToolAnnotations"
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$Tool[]"
@@ -1092,8 +1013,7 @@
       "type": "java.lang.Comparable"
     },
     {
-      "type": "java.lang.Double",
-      "allDeclaredFields": true
+      "type": "java.lang.Double"
     },
     {
       "type": "java.lang.Float[]"
@@ -1102,55 +1022,16 @@
       "type": "java.lang.Iterable"
     },
     {
-      "type": "java.lang.Number",
-      "allDeclaredFields": true
+      "type": "java.lang.Number"
     },
     {
       "type": "java.lang.Object[]"
     },
     {
-      "type": "java.lang.Record",
-      "allDeclaredFields": true
-    },
-    {
-      "type": "java.lang.String",
-      "jniAccessible": true,
-      "methods": [
-        {
-          "name": "lastIndexOf",
-          "parameterTypes": [
-            "int"
-          ]
-        },
-        {
-          "name": "substring",
-          "parameterTypes": [
-            "int"
-          ]
-        }
-      ]
+      "type": "java.lang.Record"
     },
     {
       "type": "java.lang.String[]"
-    },
-    {
-      "type": "java.lang.System",
-      "jniAccessible": true,
-      "methods": [
-        {
-          "name": "getProperty",
-          "parameterTypes": [
-            "java.lang.String"
-          ]
-        },
-        {
-          "name": "setProperty",
-          "parameterTypes": [
-            "java.lang.String",
-            "java.lang.String"
-          ]
-        }
-      ]
     },
     {
       "type": "java.lang.constant.Constable"
@@ -1172,6 +1053,9 @@
       ]
     },
     {
+      "type": "java.math.BigDecimal"
+    },
+    {
       "type": "java.net.InetSocketAddress"
     },
     {
@@ -1187,63 +1071,55 @@
       ]
     },
     {
-      "type": "java.security.SecureRandomParameters"
+      "type": "java.sql.Date"
     },
     {
-      "type": "java.sql.SQLException",
-      "fields": [
-        {
-          "name": "next"
-        }
-      ]
+      "type": "java.sql.SQLException"
     },
     {
       "type": "java.sql.SQLXML"
     },
     {
-      "type": "java.sql.Timestamp",
-      "allDeclaredFields": true
+      "type": "java.sql.Timestamp"
     },
     {
-      "type": "java.util.AbstractCollection",
-      "allDeclaredFields": true
+      "type": "java.util.AbstractCollection"
     },
     {
-      "type": "java.util.AbstractMap",
-      "allDeclaredFields": true
+      "type": "java.util.AbstractMap"
+    },
+    {
+      "type": "java.util.AbstractSet"
     },
     {
       "type": "java.util.Collection"
     },
     {
-      "type": "java.util.Date",
-      "allDeclaredFields": true
+      "type": "java.util.Date"
     },
     {
-      "type": "java.util.ImmutableCollections$AbstractImmutableCollection",
-      "allDeclaredFields": true
+      "type": "java.util.ImmutableCollections$AbstractImmutableCollection"
     },
     {
-      "type": "java.util.ImmutableCollections$AbstractImmutableList",
-      "allDeclaredFields": true
+      "type": "java.util.ImmutableCollections$AbstractImmutableList"
     },
     {
-      "type": "java.util.ImmutableCollections$AbstractImmutableMap",
-      "allDeclaredFields": true
+      "type": "java.util.ImmutableCollections$AbstractImmutableMap"
     },
     {
       "type": "java.util.ImmutableCollections$List12"
     },
     {
-      "type": "java.util.ImmutableCollections$ListN",
-      "allDeclaredFields": true
+      "type": "java.util.ImmutableCollections$ListN"
     },
     {
       "type": "java.util.ImmutableCollections$Map1"
     },
     {
-      "type": "java.util.ImmutableCollections$MapN",
-      "allDeclaredFields": true
+      "type": "java.util.ImmutableCollections$MapN"
+    },
+    {
+      "type": "java.util.LinkedHashMap$LinkedKeySet"
     },
     {
       "type": "java.util.List"
@@ -1255,23 +1131,16 @@
       "type": "java.util.RandomAccess"
     },
     {
+      "type": "java.util.SequencedCollection"
+    },
+    {
+      "type": "java.util.SequencedSet"
+    },
+    {
+      "type": "java.util.Set"
+    },
+    {
       "type": "java.util.concurrent.Semaphore"
-    },
-    {
-      "type": "java.util.concurrent.atomic.AtomicBoolean",
-      "fields": [
-        {
-          "name": "value"
-        }
-      ]
-    },
-    {
-      "type": "java.util.concurrent.atomic.AtomicReference",
-      "fields": [
-        {
-          "name": "value"
-        }
-      ]
     },
     {
       "type": "org.slf4j.LoggerFactory"
@@ -1280,280 +1149,92 @@
       "type": "org.slf4j.simple.SimpleServiceProvider"
     },
     {
-      "type": "reactor.core.publisher.FlatMapTracker",
-      "fields": [
-        {
-          "name": "size"
-        }
-      ]
+      "type": "reactor.core.publisher.FlatMapTracker"
     },
     {
-      "type": "reactor.core.publisher.FluxFlatMap$FlatMapInner",
-      "fields": [
-        {
-          "name": "s"
-        }
-      ]
+      "type": "reactor.core.publisher.FluxFlatMap$FlatMapInner"
     },
     {
-      "type": "reactor.core.publisher.FluxFlatMap$FlatMapMain",
-      "fields": [
-        {
-          "name": "error"
-        },
-        {
-          "name": "requested"
-        },
-        {
-          "name": "wip"
-        }
-      ]
+      "type": "reactor.core.publisher.FluxFlatMap$FlatMapMain"
     },
     {
       "type": "reactor.core.publisher.FluxOnErrorReturn$ReturnSubscriber"
     },
     {
-      "type": "reactor.core.publisher.FluxPublishOn$PublishOnConditionalSubscriber",
-      "fields": [
-        {
-          "name": "discardGuard"
-        },
-        {
-          "name": "requested"
-        },
-        {
-          "name": "wip"
-        }
-      ]
+      "type": "reactor.core.publisher.FluxPublishOn$PublishOnConditionalSubscriber"
     },
     {
-      "type": "reactor.core.publisher.FluxReplay",
-      "fields": [
-        {
-          "name": "connection"
-        }
-      ]
+      "type": "reactor.core.publisher.FluxReplay"
     },
     {
-      "type": "reactor.core.publisher.FluxSubscribeOnCallable$CallableSubscribeOnSubscription",
-      "fields": [
-        {
-          "name": "mainFuture"
-        },
-        {
-          "name": "requestFuture"
-        },
-        {
-          "name": "state"
-        }
-      ]
+      "type": "reactor.core.publisher.FluxSubscribeOnCallable$CallableSubscribeOnSubscription"
     },
     {
       "type": "reactor.core.publisher.LambdaMonoSubscriber"
     },
     {
-      "type": "reactor.core.publisher.LambdaSubscriber",
-      "fields": [
-        {
-          "name": "subscription"
-        }
-      ]
+      "type": "reactor.core.publisher.LambdaSubscriber"
     },
     {
-      "type": "reactor.core.publisher.MonoFlatMap$FlatMapMain",
-      "fields": [
-        {
-          "name": "second"
-        }
-      ]
+      "type": "reactor.core.publisher.MonoFlatMap$FlatMapMain"
     },
     {
-      "type": "reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain",
-      "fields": [
-        {
-          "name": "state"
-        }
-      ]
+      "type": "reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain"
     },
     {
-      "type": "reactor.core.publisher.MonoZip$ZipCoordinator",
-      "fields": [
-        {
-          "name": "state"
-        }
-      ]
+      "type": "reactor.core.publisher.MonoZip$ZipCoordinator"
     },
     {
-      "type": "reactor.core.publisher.MonoZip$ZipInner",
-      "fields": [
-        {
-          "name": "s"
-        }
-      ]
+      "type": "reactor.core.publisher.MonoZip$ZipInner"
     },
     {
-      "type": "reactor.core.publisher.Operators$MonoInnerProducerBase",
-      "fields": [
-        {
-          "name": "state"
-        }
-      ]
+      "type": "reactor.core.publisher.Operators$MonoInnerProducerBase"
     },
     {
-      "type": "reactor.core.publisher.Operators$MultiSubscriptionSubscriber",
-      "fields": [
-        {
-          "name": "missedProduced"
-        },
-        {
-          "name": "missedRequested"
-        },
-        {
-          "name": "missedSubscription"
-        },
-        {
-          "name": "wip"
-        }
-      ]
+      "type": "reactor.core.publisher.Operators$MultiSubscriptionSubscriber"
     },
     {
-      "type": "reactor.core.publisher.Operators$ScalarSubscription",
-      "fields": [
-        {
-          "name": "once"
-        }
-      ]
+      "type": "reactor.core.publisher.Operators$ScalarSubscription"
     },
     {
-      "type": "reactor.core.publisher.SinkEmptyMulticast",
-      "fields": [
-        {
-          "name": "subscribers"
-        }
-      ]
+      "type": "reactor.core.publisher.SinkEmptyMulticast"
     },
     {
-      "type": "reactor.core.publisher.SinkManyUnicast",
-      "fields": [
-        {
-          "name": "discardGuard"
-        },
-        {
-          "name": "onTerminate"
-        },
-        {
-          "name": "once"
-        },
-        {
-          "name": "requested"
-        },
-        {
-          "name": "wip"
-        }
-      ]
+      "type": "reactor.core.publisher.SinkManyUnicast"
     },
     {
-      "type": "reactor.core.publisher.SinksSpecs$AbstractSerializedSink",
-      "fields": [
-        {
-          "name": "lockedAt"
-        },
-        {
-          "name": "wip"
-        }
-      ]
+      "type": "reactor.core.publisher.SinksSpecs$AbstractSerializedSink"
     },
     {
-      "type": "reactor.core.scheduler.BoundedElasticScheduler",
-      "fields": [
-        {
-          "name": "state"
-        }
-      ]
+      "type": "reactor.core.scheduler.BoundedElasticScheduler"
     },
     {
-      "type": "reactor.core.scheduler.BoundedElasticScheduler$BoundedServices",
-      "fields": [
-        {
-          "name": "busyStates"
-        }
-      ]
+      "type": "reactor.core.scheduler.BoundedElasticScheduler$BoundedServices"
     },
     {
-      "type": "reactor.core.scheduler.BoundedElasticScheduler$BoundedState",
-      "fields": [
-        {
-          "name": "markCount"
-        }
-      ]
+      "type": "reactor.core.scheduler.BoundedElasticScheduler$BoundedState"
     },
     {
-      "type": "reactor.core.scheduler.DelegateServiceScheduler",
-      "fields": [
-        {
-          "name": "state"
-        }
-      ]
+      "type": "reactor.core.scheduler.DelegateServiceScheduler"
     },
     {
-      "type": "reactor.core.scheduler.SchedulerTask",
-      "fields": [
-        {
-          "name": "future"
-        },
-        {
-          "name": "parent"
-        }
-      ]
+      "type": "reactor.core.scheduler.SchedulerTask"
     },
     {
-      "type": "reactor.core.scheduler.WorkerTask",
-      "fields": [
-        {
-          "name": "future"
-        },
-        {
-          "name": "parent"
-        },
-        {
-          "name": "thread"
-        }
-      ]
+      "type": "reactor.core.scheduler.WorkerTask"
     },
     {
-      "type": "reactor.util.concurrent.SpscArrayQueueConsumer",
-      "fields": [
-        {
-          "name": "consumerIndex"
-        }
-      ]
+      "type": "reactor.util.concurrent.SpscArrayQueueConsumer"
     },
     {
-      "type": "reactor.util.concurrent.SpscArrayQueueProducer",
-      "fields": [
-        {
-          "name": "producerIndex"
-        }
-      ]
+      "type": "reactor.util.concurrent.SpscArrayQueueProducer"
     },
     {
-      "type": "reactor.util.concurrent.SpscLinkedArrayQueue",
-      "fields": [
-        {
-          "name": "consumerIndex"
-        },
-        {
-          "name": "producerIndex"
-        }
-      ]
+      "type": "reactor.util.concurrent.SpscLinkedArrayQueue"
     },
     {
       "type": "sun.security.provider.NativePRNG",
       "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        },
         {
           "name": "<init>",
           "parameterTypes": [
@@ -1585,6 +1266,116 @@
     },
     {
       "type": "sun.util.resources.cldr.CalendarData"
+    }
+  ],
+  "resources": [
+    {
+      "glob": "META-INF/services/com.singlestore.jdbc.plugin.Codec"
+    },
+    {
+      "glob": "META-INF/services/io.modelcontextprotocol.json.McpJsonMapperSupplier"
+    },
+    {
+      "glob": "META-INF/services/io.modelcontextprotocol.json.schema.JsonSchemaValidatorSupplier"
+    },
+    {
+      "glob": "META-INF/services/java.net.spi.InetAddressResolverProvider"
+    },
+    {
+      "glob": "META-INF/services/java.sql.Driver"
+    },
+    {
+      "glob": "META-INF/services/java.util.spi.ResourceBundleControlProvider"
+    },
+    {
+      "glob": "META-INF/services/org.slf4j.spi.SLF4JServiceProvider"
+    },
+    {
+      "glob": "com/ibm/as400/access/CoreMRI_en.properties"
+    },
+    {
+      "glob": "com/ibm/as400/access/CoreMRI_en_EC.properties"
+    },
+    {
+      "glob": "com/ibm/as400/access/JDMRI2_en.properties"
+    },
+    {
+      "glob": "com/ibm/as400/access/JDMRI2_en_EC.properties"
+    },
+    {
+      "glob": "com/ibm/as400/access/JDMRI_en.properties"
+    },
+    {
+      "glob": "com/ibm/as400/access/JDMRI_en_EC.properties"
+    },
+    {
+      "glob": "com/ibm/as400/access/MRI2_en.properties"
+    },
+    {
+      "glob": "com/ibm/as400/access/MRI2_en_EC.properties"
+    },
+    {
+      "glob": "com/ibm/as400/access/MRI_en.properties"
+    },
+    {
+      "glob": "com/ibm/as400/access/MRI_en_EC.properties"
+    },
+    {
+      "glob": "com/ibm/as400/access/SVMRI_en_EC.properties"
+    },
+    {
+      "glob": "com/ibm/as400/access/com.ibm.as400.access.jt400.properties"
+    },
+    {
+      "glob": "com/ibm/as400/access/jt400.properties"
+    },
+    {
+      "glob": "draft/2020-12/meta/applicator"
+    },
+    {
+      "glob": "draft/2020-12/meta/content"
+    },
+    {
+      "glob": "draft/2020-12/meta/core"
+    },
+    {
+      "glob": "draft/2020-12/meta/format-annotation"
+    },
+    {
+      "glob": "draft/2020-12/meta/meta-data"
+    },
+    {
+      "glob": "draft/2020-12/meta/unevaluated"
+    },
+    {
+      "glob": "draft/2020-12/meta/validation"
+    },
+    {
+      "glob": "draft/2020-12/schema"
+    },
+    {
+      "glob": "simplelogger.properties"
+    },
+    {
+      "glob": "singlestore-jdbc-client.properties"
+    },
+    {
+      "bundle": "com.ibm.as400.access.CoreMRI"
+    },
+    {
+      "bundle": "com.ibm.as400.access.JDMRI"
+    },
+    {
+      "bundle": "com.ibm.as400.access.JDMRI2"
+    },
+    {
+      "bundle": "com.ibm.as400.access.MRI"
+    },
+    {
+      "bundle": "com.ibm.as400.access.MRI2"
+    },
+    {
+      "bundle": "com.ibm.as400.access.SVMRI"
     }
   ]
 }
