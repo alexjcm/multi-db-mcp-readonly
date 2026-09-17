@@ -19,6 +19,8 @@ repositories {
 }
 
 dependencies {
+    // SDK 2.0.1 requires local STDIO concurrency hardening; see
+    // ResilientStdioServerTransportProvider. Re-evaluate it on the next SDK upgrade.
     implementation platform('io.modelcontextprotocol.sdk:mcp-bom:2.0.1')
     implementation 'io.modelcontextprotocol.sdk:mcp-core'
     implementation 'io.modelcontextprotocol.sdk:mcp-json-jackson2'

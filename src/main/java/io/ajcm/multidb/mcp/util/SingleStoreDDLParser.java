@@ -116,33 +116,33 @@ public class SingleStoreDDLParser {
             )
             """;
         
-        System.out.println("=== Test SingleStore DDL Parser ===\n");
+        System.err.println("=== Test SingleStore DDL Parser ===\n");
         
-        System.out.println("Test 1 - Shard + Sort Key:");
+        System.err.println("Test 1 - Shard + Sort Key:");
         testParser(ddl1);
         
-        System.out.println("\nTest 2 - Solo Shard Key:");
+        System.err.println("\nTest 2 - Solo Shard Key:");
         testParser(ddl2);
         
-        System.out.println("\nTest 3 - Sin Keys:");
+        System.err.println("\nTest 3 - Sin Keys:");
         testParser(ddl3);
     }
     
     private static void testParser(String ddl) {
         Map<String, List<String>> result = parseExtendedMetadata(ddl);
         
-        System.out.println("DDL: " + ddl.substring(0, Math.min(100, ddl.length())) + "...");
+        System.err.println("DDL: " + ddl.substring(0, Math.min(100, ddl.length())) + "...");
         
         if (result.containsKey("shard_key")) {
-            System.out.println("  Shard Key: " + result.get("shard_key"));
+            System.err.println("  Shard Key: " + result.get("shard_key"));
         } else {
-            System.out.println("  Shard Key: [no encontrado]");
+            System.err.println("  Shard Key: [no encontrado]");
         }
         
         if (result.containsKey("sort_key")) {
-            System.out.println("  Sort Key: " + result.get("sort_key"));
+            System.err.println("  Sort Key: " + result.get("sort_key"));
         } else {
-            System.out.println("  Sort Key: [no encontrado]");
+            System.err.println("  Sort Key: [no encontrado]");
         }
     }
 }

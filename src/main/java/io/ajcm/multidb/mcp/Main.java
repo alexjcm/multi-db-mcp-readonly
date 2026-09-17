@@ -9,14 +9,16 @@ import io.ajcm.multidb.mcp.db.Db2ConnectionService;
 import io.ajcm.multidb.mcp.db.DbConnectionProvider;
 import io.ajcm.multidb.mcp.db.SingleStoreConnectionService;
 import io.ajcm.multidb.mcp.tool.SmartDefaultToolBuilder;
+import io.ajcm.multidb.mcp.transport.ResilientStdioServerTransportProvider;
 import io.ajcm.multidb.mcp.util.ConfigLoader;
 import io.ajcm.multidb.mcp.util.ConfigPathResolver;
 import io.ajcm.multidb.mcp.util.ConfigPathResolver.ResolvedConfigPath;
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServer;
+import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.server.McpSyncServer;
-import io.modelcontextprotocol.server.transport.StdioServerTransportProvider;
+import io.modelcontextprotocol.spec.McpServerTransportProvider;
 import io.modelcontextprotocol.spec.McpSchema.ServerCapabilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,21 +64,24 @@ public class Main {
 
             // Create MCP server
             McpJsonMapper jsonMapper = McpJsonDefaults.getMapper();
-            StdioServerTransportProvider transport = new StdioServerTransportProvider(jsonMapper);
-            McpSyncServer server = McpServer.sync(transport)
-                .serverInfo(SERVER_NAME, serverVersion)
-                .capabilities(ServerCapabilities.builder()
-                    .tools(true)
-                    .logging()
-                    .build())
-                .build();
+            ResilientStdioServerTransportProvider transport =
+                new ResilientStdioServerTransportProvider(jsonMapper);
+            McpSyncServer server = buildServer(transport, providers, serverVersion);
 
-            // Register 4 generic tools with smart defaults
-            
-            server.addTool(SmartDefaultToolBuilder.buildHealthTool(providers));
-            server.addTool(SmartDefaultToolBuilder.buildListTablesTool(providers));
-            server.addTool(SmartDefaultToolBuilder.buildDescribeTableTool(providers));
-            server.addTool(SmartDefaultToolBuilder.buildExecuteSelectTool(providers));
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    server.closeGracefully();
+                } catch (Exception e) {
+                    log.debug("Error while closing MCP server", e);
+                }
+                providers.values().forEach(provider -> {
+                    try {
+                        provider.close();
+                    } catch (Exception e) {
+                        log.debug("Error while closing database provider {}", provider.getConfig().id(), e);
+                    }
+                });
+            }, "mcp-shutdown"));
 
             log.info("Multi-DB MCP server {} started with {} connections", serverVersion, configs.size());
             
@@ -89,5 +94,31 @@ public class Main {
             log.error("Failed to start MCP server", e);
             System.exit(1);
         }
+    }
+
+    /**
+     * Builds the MCP server with all static tools registered before the STDIO transport
+     * starts processing client messages.
+     */
+    static McpSyncServer buildServer(
+            McpServerTransportProvider transport,
+            Map<String, DbConnectionProvider> providers,
+            String serverVersion) {
+
+        List<McpServerFeatures.SyncToolSpecification> tools = List.of(
+            SmartDefaultToolBuilder.buildHealthTool(providers),
+            SmartDefaultToolBuilder.buildListTablesTool(providers),
+            SmartDefaultToolBuilder.buildDescribeTableTool(providers),
+            SmartDefaultToolBuilder.buildExecuteSelectTool(providers)
+        );
+
+        return McpServer.sync(transport)
+            .serverInfo(SERVER_NAME, serverVersion)
+            .capabilities(ServerCapabilities.builder()
+                .tools(false)
+                .logging()
+                .build())
+            .tools(tools)
+            .build();
     }
 }

@@ -34,6 +34,15 @@
       ]
     },
     {
+      "type": "com.ibm.as400.access.AS400JDBCConnectionImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "com.ibm.as400.access.AS400JDBCDriver"
     },
     {
@@ -235,10 +244,16 @@
           "name": "prepStmtCacheSize"
         },
         {
+          "name": "preserveInstants"
+        },
+        {
           "name": "printStackTrace"
         },
         {
           "name": "registerJmxPool"
+        },
+        {
+          "name": "requestCredentialDelegation"
         },
         {
           "name": "restrictedAuth"
@@ -818,7 +833,21 @@
       ]
     },
     {
-      "type": "io.modelcontextprotocol.spec.McpSchema$JSONRPCResponse$JSONRPCError"
+      "type": "io.modelcontextprotocol.spec.McpSchema$JSONRPCResponse$JSONRPCError",
+      "methods": [
+        {
+          "name": "code",
+          "parameterTypes": []
+        },
+        {
+          "name": "data",
+          "parameterTypes": []
+        },
+        {
+          "name": "message",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "io.modelcontextprotocol.spec.McpSchema$ListToolsResult",
@@ -1034,6 +1063,12 @@
       "type": "java.lang.String[]"
     },
     {
+      "type": "java.lang.Thread"
+    },
+    {
+      "type": "java.lang.Thread$Builder$OfVirtual"
+    },
+    {
       "type": "java.lang.constant.Constable"
     },
     {
@@ -1150,6 +1185,9 @@
     },
     {
       "type": "reactor.core.publisher.FlatMapTracker"
+    },
+    {
+      "type": "reactor.core.publisher.FluxDoFinally$DoFinallySubscriber"
     },
     {
       "type": "reactor.core.publisher.FluxFlatMap$FlatMapInner"
